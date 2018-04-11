@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Licensed under the MIT License
+
+# Get script path and append it to PATH so other scripts are callable.
+SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+PATH="${PATH}:${SCRIPT_PATH}"
+
+# Header
+ARGUMENTS="\
+  -n \$count                    print \$count times
+  \$string                      something other than \"Hello, world!\" to print
+"
+source ./lib/header
+source ./lib/utils
+
+# Parse arguments.
+n=1
+while (( ${#} > 0 )); do
+  case "${1}" in
+  '-n') shift && n=${1};;
+  *)
+    # Unrecognized argument
+    [[ -z ${string} ]] && string="${1}" && shift && continue
+    printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; printUsage; exit 1 ;;
+  esac; shift
+done
+
+#------------------------------------------------------------------------------#
+
+[[ -z ${string} ]] && string="Hello, world!"
+
+for (( i = 0; i < ${n}; i++ )); do
+  printf "%s\n" "${string}"
+done
+

@@ -6,7 +6,7 @@
 mandatory() {
   while (( ${#} > 0 )); do
     if [[ -z ${!1} ]]; then
-      printf "%s argument is mandatory.\n" "${argument}" >&2
+      printf "%s argument is mandatory.\n" "${1}" >&2
       printUsage
       exit 2
     fi

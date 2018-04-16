@@ -6,15 +6,6 @@
 # Fail script if any command fails.
 # set -e
 
-# Import the bash-infinity framework.
-# source "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/oo-bootstrap.sh"
-
-# load the type system
-# import util/log util/exception util/tryCatch util/namedParameters
-
-# load the standard library for basic types and type the system
-# import util/class
-
 # Traps
 for t in ; do
   trap "return_code=\${?}; trap - EXIT; printf \"${t} %s\\n\" \"\${return_code}\" 1>&2" ${t}

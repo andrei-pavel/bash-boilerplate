@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2018 Qualitance, andrei.pavel@qualitance.com
+# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
 # Fail script if any command fails.
-# set -e
+set -e
 
 # Traps
 for t in ; do

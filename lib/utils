@@ -3,10 +3,30 @@
 # Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
+# Get script path and append it to PATH so other scripts are callable.
+SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+PATH="${PATH}:${SCRIPT_PATH}"
+
+# Header
+. "${SCRIPT_PATH}/lib/header"
+
+confirm() {
+  # call with a prompt string or use a default
+  read -r -p "${1:-Are you sure? [y/N]} " response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+      true
+      ;;
+    *)
+      false
+      ;;
+  esac
+}
+
 mandatory() {
   while (( ${#} > 0 )); do
     if [[ -z ${!1} ]]; then
-      printf "%s argument is mandatory.\n" "${1}" >&2
+      printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2
       printUsage
       exit 2
     fi

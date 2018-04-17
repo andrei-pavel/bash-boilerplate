@@ -10,7 +10,7 @@ PATH="${PATH}:${SCRIPT_PATH}"
 # Header
 . "${SCRIPT_PATH}/lib/header"
 
-confirm() {
+function confirm() {
   # call with a prompt string or use a default
   read -r -p "${1:-Are you sure? [y/N]} " response
   case "$response" in
@@ -23,7 +23,7 @@ confirm() {
   esac
 }
 
-mandatory() {
+function mandatory() {
   while (( ${#} > 0 )); do
     if [[ -z ${!1} ]]; then
       printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2

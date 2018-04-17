@@ -15,7 +15,8 @@ scripts which aid in showing the usage of your script and in debugging it.
 own inside the code block suggested by the `Parse arguments` comment and inside
 the `ARGUMENTS=` text block.
 
-See the `hello-world` example.
+See the `hello-world` example which showcases the different uses of these
+arguments.
 
 
 ## Usage

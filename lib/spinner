@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Licensed under the MIT License
+
+SUCCESS="DONE"
+FAIL="FAIL"
+
+_spinner_cycle='⠋⠙⠸⠴⠦⠇'
+_spinner_period=0.15s
+_spinner_ready=false
+
+function _spinner {
+  case ${1} in
+    start)
+      i=1
+      while true; do
+          printf '\b%s' "${_spinner_cycle:i++%${#_spinner_cycle}:1}"
+          sleep ${_spinner_period}
+        done
+      ;;
+
+    stop)
+      if [[ -z ${3} ]]; then
+          exit 1
+      fi
+      kill ${3} > /dev/null 2>&1
+      if (( ${2} == 0 )); then
+        status="$(printf "${GREEN}%s${RESET}" "${SUCCESS}")"
+      else
+        status="$(printf "${RED}%s${RESET}" "${FAIL}")"
+      fi
+      printf '\b[%s]\n' "${status}"
+      ;;
+
+    *)
+      printf 'invalid argument, try {start/stop}'
+      exit 2
+      ;;
+  esac
+}
+

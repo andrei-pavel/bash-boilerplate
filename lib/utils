@@ -4,13 +4,14 @@
 # Licensed under the MIT License
 
 # Get script path and append it to PATH so other scripts are callable.
-SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+SCRIPT_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 PATH="${PATH}:${SCRIPT_PATH}"
 
 # Header
-. "${SCRIPT_PATH}/lib/header"
+. "${SCRIPT_PATH}/header"
+. "${SCRIPT_PATH}/spinner"
 
-function confirm() {
+function confirm {
   # call with a prompt string or use a default
   read -r -p "${1:-Are you sure? [y/N]} " response
   case "$response" in
@@ -23,7 +24,7 @@ function confirm() {
   esac
 }
 
-function mandatory() {
+function mandatory {
   while (( ${#} > 0 )); do
     if [[ -z ${!1} ]]; then
       printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2
@@ -32,4 +33,18 @@ function mandatory() {
     fi
     shift
   done
+}
+
+function start_spinner {
+  local message="${1}"
+  printf "%s%$(($(tput cols)-${#message}-8))s" "${message}"
+  _spinner "start" &
+  _spinner_pid=$!
+  disown
+}
+
+function stop_spinner {
+  local exit_status="${1}"
+  _spinner "stop" "${exit_status}" "${_spinner_pid}"
+  unset _spinner_pid
 }

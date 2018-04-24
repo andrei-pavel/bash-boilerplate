@@ -38,10 +38,14 @@ mandatory count
 
 #------------------------------------------------------------------------------#
 
+start_spinner "Printing..."
+
 if ${confirm_required} && ! confirm; then
   exit 0
 fi
 
 for (( i = 0; i < count; i++ )); do
-  printf '%s\n' "${string}"
+  printf '\n%s\n' "${string}"
 done
+
+stop_spinner 0

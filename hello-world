@@ -9,7 +9,7 @@ PATH="${PATH}:${SCRIPT_PATH}"
 
 # Header
 ARGUMENTS="\
-  [-c]                         whether to ask user for confirmation
+  [-c|--confirm]               whether to ask user for confirmation
   -n \$count                    print \$count times
   [\$string]                    something other than \"Hello, world!\" to print
 "
@@ -20,11 +20,14 @@ ARGUMENTS="\
 confirm_required=false
 while (( ${#} > 0 )); do
   case "${1}" in
+  # [-c|--confirm]               whether to ask user for confirmation
   '-c'|'--confirm') confirm_required=true ;;
+  # -n \$count                    print \$count times
   '-n') shift && count=${1} ;;
   *)
-    # Unrecognized argument
+    # [\$string]                    something other than \"Hello, world!\" to print
     [[ -z ${string} ]] && string="${1}" && shift && continue
+    # Unrecognized argument
     printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; printUsage; exit 1 ;;
   esac; shift
 done

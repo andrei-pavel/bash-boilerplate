@@ -31,3 +31,8 @@ Arguments:
   -n $count                    print $count times
   [$string]                    something other than "Hello, world!" to print
 ```
+
+
+## Support the maintainer
+
+<noscript><a href="https://liberapay.com/andrei/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>

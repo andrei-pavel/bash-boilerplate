@@ -3,15 +3,25 @@
 # Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
-SUCCESS="DONE"
-FAIL="FAIL"
+SUCCESS='DONE'
+FAIL='FAIL'
 
 _spinner_cycle='⠋⠙⠸⠴⠦⠇'
-_spinner_period=0.15s
+_spinner_period='0.15s'
+
+function _display_message() {
+  local mode="${1}"
+  if [[ ! -z "${mode}" && "${mode}" == 'with-padding' ]]; then
+    printf "\\033[1K\b%s%$(($(tput cols)-${#_message}-8))s" "${_message}"
+  else
+    printf "\\033[1K%s" "${_message}"
+  fi
+}
 
 function _spinner {
   case ${1} in
     start)
+      _display_message
       tput civis
       i=1
       while true; do
@@ -31,6 +41,7 @@ function _spinner {
       else
         status="$(printf "${RED}%s${RESET}" "${FAIL}")"
       fi
+      _display_message with-padding
       printf '\b[%s]\n' "${status}"
       ;;
 
@@ -39,4 +50,20 @@ function _spinner {
       exit 2
       ;;
   esac
+}
+
+function start_spinner() {
+  if [[ ${-} == *x* ]]; then
+    return
+  fi
+  _message="${1}"
+  _spinner 'start' &
+  _spinner_pid="${!}"
+  disown
+}
+
+function stop_spinner() {
+  local exit_status="${1}"
+  _spinner 'stop' "${exit_status}" "${_spinner_pid}"
+  unset _spinner_pid
 }

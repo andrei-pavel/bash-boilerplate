@@ -34,23 +34,6 @@ function mandatory() {
   done
 }
 
-function start_spinner() {
-  if [[ ${-} == *x* ]]; then
-    return
-  fi
-  local message="${1}"
-  printf "%s%$(($(tput cols)-${#message}-8))s" "${message}"
-  _spinner 'start' &
-  _spinner_pid="${!}"
-  disown
-}
-
-function stop_spinner() {
-  local exit_status="${1}"
-  _spinner 'stop' "${exit_status}" "${_spinner_pid}"
-  unset _spinner_pid
-}
-
 # Traps
 for t in HUP INT QUIT KILL TERM EXIT; do
   trap "\

@@ -8,11 +8,11 @@ FAIL="FAIL"
 
 _spinner_cycle='⠋⠙⠸⠴⠦⠇'
 _spinner_period=0.15s
-_spinner_ready=false
 
 function _spinner {
   case ${1} in
     start)
+      tput civis
       i=1
       while true; do
           printf '\b%s' "${_spinner_cycle:i++%${#_spinner_cycle}:1}"
@@ -21,11 +21,12 @@ function _spinner {
       ;;
 
     stop)
+      tput cvvis
       if [[ -z ${3} ]]; then
           exit 1
       fi
-      kill ${3} > /dev/null 2>&1
-      if (( ${2} == 0 )); then
+      kill "${3}" > /dev/null 2>&1
+      if [[ ${2} == 0 ]]; then
         status="$(printf "${GREEN}%s${RESET}" "${SUCCESS}")"
       else
         status="$(printf "${RED}%s${RESET}" "${FAIL}")"
@@ -34,9 +35,8 @@ function _spinner {
       ;;
 
     *)
-      printf 'invalid argument, try {start/stop}'
+      printf 'ERROR: invalid argument, try {start/stop}' &>2
       exit 2
       ;;
   esac
 }
-

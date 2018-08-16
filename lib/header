@@ -6,11 +6,6 @@
 # Fail script if any command fails.
 set -e
 
-# Traps
-for t in ; do
-  trap "return_code=\${?}; trap - EXIT; printf \"${t} %s\\n\" \"\${return_code}\" 1>&2" ${t}
-done
-
 # Colors
 RESET="\e[1m\e[0m"
 BLACK="\e[1m\e[30m"
@@ -23,7 +18,7 @@ CYAN="\e[1m\e[36m"
 WHITE="\e[1m\e[37m"
 
 # Print usage function
-function printUsage {
+function printUsage() {
   if [[ -z ${ARGUMENTS} ]]; then
     local arguments=""
   else
@@ -51,7 +46,7 @@ while (( i <= ${#} )); do
   esac; i=$(( i + 1 ))
 done
 
-function additional {
+function additional() {
   local additional_arguments=
   case $- in
     *x* ) additional_arguments+=" -d";;

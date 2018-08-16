@@ -3,15 +3,14 @@
 # Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
-# Get script path and append it to PATH so other scripts are callable.
-SCRIPT_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-PATH="${PATH}:${SCRIPT_PATH}"
+# Get script path.
+script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 # Header
-. "${SCRIPT_PATH}/header"
-. "${SCRIPT_PATH}/spinner"
+. "${script_path}/header"
+. "${script_path}/spinner"
 
-function confirm {
+function confirm() {
   # call with a prompt string or use a default
   read -r -p "${1:-Are you sure? [y/N]} " response
   case "$response" in
@@ -24,7 +23,7 @@ function confirm {
   esac
 }
 
-function mandatory {
+function mandatory() {
   while (( ${#} > 0 )); do
     if [[ -z ${!1} ]]; then
       printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2
@@ -35,16 +34,30 @@ function mandatory {
   done
 }
 
-function start_spinner {
+function start_spinner() {
+  if [[ ${-} == *x* ]]; then
+    return
+  fi
   local message="${1}"
   printf "%s%$(($(tput cols)-${#message}-8))s" "${message}"
-  _spinner "start" &
-  _spinner_pid=$!
+  _spinner 'start' &
+  _spinner_pid="${!}"
   disown
 }
 
-function stop_spinner {
+function stop_spinner() {
   local exit_status="${1}"
-  _spinner "stop" "${exit_status}" "${_spinner_pid}"
+  _spinner 'stop' "${exit_status}" "${_spinner_pid}"
   unset _spinner_pid
 }
+
+# Traps
+for t in HUP INT QUIT KILL TERM EXIT; do
+  trap "\
+    return_code=\${?}
+    trap - EXIT
+    stop_spinner
+    printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+    exit \${return_code}
+  " ${t}
+done

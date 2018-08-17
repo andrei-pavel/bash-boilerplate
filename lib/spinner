@@ -10,12 +10,7 @@ _spinner_cycle='⠋⠙⠸⠴⠦⠇'
 _spinner_period='0.15s'
 
 function _display_message() {
-  local mode="${1}"
-  if [[ ! -z "${mode}" && "${mode}" == 'with-padding' ]]; then
-    printf "\\033[1K\b%s%$(($(tput cols)-${#_message}-8))s" "${_message}"
-  else
-    printf "\\033[1K%s" "${_message}"
-  fi
+  printf "\\r%s%$(($(tput cols)-${#_message}-8))s" "${_message}"
 }
 
 function _spinner {
@@ -41,7 +36,7 @@ function _spinner {
       else
         status="$(printf "${RED}%s${RESET}" "${FAIL}")"
       fi
-      _display_message with-padding
+      _display_message
       printf '\b[%s]\n' "${status}"
       ;;
 

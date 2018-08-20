@@ -8,7 +8,6 @@ script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 # Header
 . "${script_path}/header"
-. "${script_path}/spinner"
 
 function confirm() {
   # call with a prompt string or use a default
@@ -33,14 +32,3 @@ function mandatory() {
     shift
   done
 }
-
-# Traps
-for t in HUP INT QUIT KILL TERM EXIT; do
-  trap "\
-    return_code=\${?}
-    trap - EXIT
-    stop_spinner
-    printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
-    exit \${return_code}
-  " ${t}
-done

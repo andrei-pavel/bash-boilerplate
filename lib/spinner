@@ -62,3 +62,14 @@ function stop_spinner() {
   _spinner 'stop' "${exit_status}" "${_spinner_pid}"
   unset _spinner_pid
 }
+
+# Traps
+for t in HUP INT QUIT KILL TERM EXIT; do
+  trap "\
+    return_code=\${?}
+    trap - EXIT
+    stop_spinner \${return_code}
+    printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+    exit \${return_code}
+  " ${t}
+done

@@ -43,7 +43,7 @@ while (( i <= ${#} )); do
   '-d'|'--debug') set -x; set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1)) ;;
   # Help: display usage
   '-h'|'--help') printUsage; exit 0 ;;
-  esac; i=$(( i + 1 ))
+  esac; (( ++i ))
 done
 
 function additional() {

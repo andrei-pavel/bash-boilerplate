@@ -10,34 +10,39 @@ _spinner_cycle='⠋⠙⠸⠴⠦⠇'
 _spinner_period='0.15s'
 
 function _display_message() {
-  printf "\\r%s%$(($(tput cols)-${#_message}-8))s" "${_message}"
+  local status=${1}
+  local mode=${2}
+  if [[ ! -z ${status} && ${mode} != 'spinning' ]]; then
+    status="[${status}]"
+  fi
+  printf "\\e[1A\\r%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}"
 }
 
 function _spinner {
   case ${1} in
     start)
       _display_message
+      _released=true
       tput civis
       i=1
       while true; do
-          printf '\b%s' "${_spinner_cycle:i++%${#_spinner_cycle}:1}"
+          _display_message "${_spinner_cycle:i++%${#_spinner_cycle}:1}" spinning
           sleep ${_spinner_period}
         done
       ;;
 
     stop)
       tput cvvis
-      if [[ -z ${3} ]]; then
-          exit 1
+      if [[ -z ${_spinner_pid} ]]; then
+          return 1
       fi
-      kill "${3}" > /dev/null 2>&1
+      kill "${_spinner_pid}" > /dev/null 2>&1
       if [[ ${2} == 0 ]]; then
-        status="$(printf "${GREEN}%s${RESET}" "${SUCCESS}")"
+        status="${GREEN}${SUCCESS}${RESET}"
       else
-        status="$(printf "${RED}%s${RESET}" "${FAIL}")"
+        status="${GREEN}${FAIL}${RESET}"
       fi
-      _display_message
-      printf '\b[%s]\n' "${status}"
+      _display_message ${status}
       ;;
 
     *)
@@ -52,14 +57,18 @@ function start_spinner() {
     return
   fi
   _message="${1}"
+  _released=false
   _spinner 'start' &
   _spinner_pid="${!}"
+  sleep 0.1s
   disown
 }
 
 function stop_spinner() {
-  local exit_status="${1}"
-  _spinner 'stop' "${exit_status}" "${_spinner_pid}"
+  if [[ ${-} == *x* ]]; then
+    return
+  fi
+  _spinner 'stop' "${1}"
   unset _spinner_pid
 }
 

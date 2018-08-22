@@ -21,8 +21,6 @@ function _display_message() {
 function _spinner {
   case ${1} in
     start)
-      _display_message
-      _released=true
       tput civis
       i=1
       while true; do
@@ -57,10 +55,9 @@ function start_spinner() {
     return
   fi
   _message="${1}"
-  _released=false
+  _display_message
   _spinner 'start' &
   _spinner_pid="${!}"
-  sleep 0.1s
   disown
 }
 

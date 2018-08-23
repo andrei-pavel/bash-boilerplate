@@ -27,15 +27,15 @@ function _spinner {
       tput civis
       i=1
       while true; do
-          _display_message "${_spinner_cycle:i++%${#_spinner_cycle}:1}" 'spinning'
-          sleep ${_spinner_period}
-        done
+        _display_message "${_spinner_cycle:i++%${#_spinner_cycle}:1}" 'spinning'
+        sleep ${_spinner_period}
+      done
       ;;
 
     stop)
       tput cvvis
       if [[ -z ${_spinner_pid} ]]; then
-          return 1
+        return 1
       fi
       kill "${_spinner_pid}" > /dev/null 2>&1
       if [[ ${2} == 0 ]]; then

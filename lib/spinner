@@ -16,6 +16,9 @@ function _display_message() {
     status="[${status}]"
   fi
   printf "\\e[1A\\r%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}"
+  if [[ ${mode} == 'status' ]]; then
+    printf '\n'
+  fi
 }
 
 function _spinner {
@@ -24,7 +27,7 @@ function _spinner {
       tput civis
       i=1
       while true; do
-          _display_message "${_spinner_cycle:i++%${#_spinner_cycle}:1}" spinning
+          _display_message "${_spinner_cycle:i++%${#_spinner_cycle}:1}" 'spinning'
           sleep ${_spinner_period}
         done
       ;;
@@ -40,7 +43,7 @@ function _spinner {
       else
         status="${GREEN}${FAIL}${RESET}"
       fi
-      _display_message ${status}
+      _display_message ${status} 'status'
       ;;
 
     *)

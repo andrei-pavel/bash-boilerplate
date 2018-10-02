@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Copyright (C) 2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Licensed under the MIT License
+
+# Traps
+# Accounts for spinner as well
+function traps() {
+  on_trap=${1}
+  for t in HUP INT QUIT KILL TERM EXIT; do
+    trap "\
+      return_code=\${?}
+      trap - EXIT
+      declare -f stop_spinner &> /dev/null && stop_spinner \${return_code}
+      ${on_trap}
+      printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+      exit \${return_code}
+    " ${t}
+  done
+}
+
+# Default traps
+traps

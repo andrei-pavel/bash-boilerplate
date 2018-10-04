@@ -8,16 +8,24 @@ FAIL='FAIL'
 
 _spinner_cycle='⠋⠙⠸⠴⠦⠇'
 _spinner_period='0.15s'
+_first=true
 
 function _display_message() {
   local status=${1}
   local mode=${2}
-  if [[ ! -z ${status} && ${mode} != 'spinning' ]]; then
+  if [[ ${mode} == 'status' ]]; then
     status="[${status}]"
   fi
-  printf "\\e[1A\\r%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}"
+  full_status="$(printf "%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}")"
+  if ${_first}; then
+    printf '%s\n' "${full_status}"
+    _first=false
+  else
+    printf '\e[1A\r%s' "${full_status}"
+  fi
   if [[ ${mode} == 'status' ]]; then
     printf '\n'
+    _first=true
   fi
 }
 

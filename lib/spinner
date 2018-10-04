@@ -16,12 +16,12 @@ function _display_message() {
   if [[ ${mode} == 'status' ]]; then
     status="[${status}]"
   fi
-  full_status="$(printf "%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}")"
+  full_status="$(printf "%s%$(($(tput cols)-${#_message}-8))s${status}" "${_message}")"
   if ${_first}; then
     printf '%s\n' "${full_status}"
     _first=false
   else
-    printf '\e[1A\r%s' "${full_status}"
+    printf '\e[1A\r%s\n' "${full_status}"
   fi
   if [[ ${mode} == 'status' ]]; then
     printf '\n'

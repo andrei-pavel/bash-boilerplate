@@ -24,7 +24,6 @@ function _display_message() {
     printf '\e[1A\r%s\n' "${full_status}"
   fi
   if [[ ${mode} == 'status' ]]; then
-    printf '\n'
     _first=true
   fi
 }

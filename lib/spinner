@@ -7,12 +7,12 @@ SUCCESS='DONE'
 FAIL='FAIL'
 
 _spinner_cycle=(
+'[●   ]'
 '[ ●  ]'
 '[  ● ]'
 '[   ●]'
 '[  ● ]'
 '[ ●  ]'
-'[●   ]'
 )
 _spinner_period='0.15s'
 
@@ -23,10 +23,10 @@ function _display_message() {
     status="${_spinner_cycle[$((_i%${#_spinner_cycle[@]}))]}"
     (( ++_i ))
   fi
-  printf "\\r%s%$(($(tput cols)-${#_message}-8))s${status}" "${_message}"
-  if [[ ${mode} = 'status' ]]; then
-    printf '\n'
+  if [[ ${mode} != 'first' ]]; then
+    printf '\e[1A'
   fi
+  printf "\\r%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}"
 }
 
 function _spinner {
@@ -66,10 +66,10 @@ function start_spinner() {
     return
   fi
   _message="${1}"
-  _display_message
+  _display_message 'first'
   _spinner 'start' &
   _buffer="$(mktemp)"
-  exec 3>&1 1>"${_buffer}"
+  exec 3>&1 1>"${_buffer}" 2>&1
   _spinner_pid="${!}"
   disown
 }

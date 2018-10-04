@@ -6,24 +6,34 @@
 SUCCESS='DONE'
 FAIL='FAIL'
 
-_spinner_cycle='⠋⠙⠸⠴⠦⠇'
+_spinner_cycle=(
+'[ ●  ]'
+'[  ● ]'
+'[   ●]'
+'[  ● ]'
+'[ ●  ]'
+'[●   ]'
+)
 _spinner_period='0.15s'
 _first=true
 
 function _display_message() {
-  local status=${1}
-  local mode=${2}
-  if [[ ${mode} == 'status' ]]; then
+  local mode=${1}
+  local status=${2}
+  if [[ ${mode} = 'status' ]]; then
     status="[${status}]"
   fi
-  full_status="$(printf "%s%$(($(tput cols)-${#_message}-8))s${status}" "${_message}")"
   if ${_first}; then
-    printf '%s\n' "${full_status}"
     _first=false
   else
-    printf '\e[1A\r%s\n' "${full_status}"
+    printf '\e[1A\r'
   fi
-  if [[ ${mode} == 'status' ]]; then
+  if [[ ${mode} = 'spinning' ]]; then
+    status="${_spinner_cycle[$((i%${#_spinner_cycle[@]}))]}"
+    (( ++i ))
+  fi
+  printf "%s%$(($(tput cols)-${#_message}-8))s${status}\\n" "${_message}"
+  if [[ ${mode} = 'status' ]]; then
     _first=true
   fi
 }
@@ -34,7 +44,7 @@ function _spinner {
       tput civis
       i=1
       while true; do
-        _display_message "${_spinner_cycle:i++%${#_spinner_cycle}:1}" 'spinning'
+        _display_message 'spinning'
         sleep ${_spinner_period}
       done
       ;;
@@ -45,12 +55,12 @@ function _spinner {
         return 1
       fi
       kill "${_spinner_pid}" > /dev/null 2>&1
-      if [[ ${2} == 0 ]]; then
+      if [[ ${2} = 0 ]]; then
         status="${GREEN}${SUCCESS}${RESET}"
       else
         status="${GREEN}${FAIL}${RESET}"
       fi
-      _display_message ${status} 'status'
+      _display_message 'status' "${status}"
       ;;
 
     *)

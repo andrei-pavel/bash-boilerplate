@@ -2,6 +2,8 @@
 
 # Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
+#
+# Warning! Nested spinners are not supported.
 
 . "$(dirname "${BASH_SOURCE}")/traps"
 

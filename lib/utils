@@ -3,11 +3,8 @@
 # Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
-# Get script path.
-script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-
 # Header
-. "${script_path}/header"
+. "$(dirname ${BASH_SOURCE[0]})/header"
 
 function confirm() {
   # call with a prompt string or use a default

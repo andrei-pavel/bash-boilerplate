@@ -66,7 +66,7 @@ function _spinner {
 }
 
 function start_spinner() {
-  if [[ ${-} = *x* ]]; then
+  if [[ ${-} = *x* || ! -z ${_spinner_pid} ]]; then
     return
   fi
   _message="${1}"
@@ -79,7 +79,7 @@ function start_spinner() {
 }
 
 function stop_spinner() {
-  if [[ ${-} = *x* ]]; then
+  if [[ ${-} = *x* || -z ${_spinner_pid} ]]; then
     return
   fi
   exec 1>&3

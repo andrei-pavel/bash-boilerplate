@@ -3,6 +3,9 @@
 # Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
+[[ ! -z ${_LIB_UTILS_INCLUDED+x} ]] && return 0
+_LIB_UTILS_INCLUDED=true
+
 # Header
 . "$(dirname "${BASH_SOURCE[0]}")/header"
 
@@ -21,7 +24,7 @@ function confirm() {
 
 function mandatory() {
   while (( ${#} > 0 )); do
-    if [[ -z ${!1} ]]; then
+    if [[ -z ${!1+x} ]]; then
       printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2
       printUsage
       exit 2

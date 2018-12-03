@@ -3,10 +3,16 @@
 # Copyright (C) 2018 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
+[[ ! -z ${_LIB_TRAPS_INCLUDED+x} ]] && return 0
+_LIB_TRAPS_INCLUDED=true
+
 # Traps
 # Accounts for spinner as well
 function traps() {
-  on_trap=${1}
+  local on_trap=
+  if (( ${#} > 0 )); then
+    on_trap=${1}
+  fi
   for t in HUP INT QUIT KILL TERM EXIT; do
     trap "\
       return_code=\${?}

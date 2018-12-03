@@ -36,7 +36,7 @@ done
 
 mandatory count
 
-[[ -z ${string} ]] && string="Hello, world!"
+[[ -z ${string+x} ]] && string="Hello, world!"
 
 #------------------------------------------------------------------------------#
 

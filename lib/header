@@ -4,47 +4,53 @@
 # Licensed under the MIT License
 
 # Fail script if any command fails.
-set -e
+set -euo pipefail
+
+[[ ! -z ${_LIB_HEADER_INCLUDED+x} ]] && return 0
+_LIB_HEADER_INCLUDED=true
 
 # Colors
-RESET="\e[1m\e[0m"
-BLACK="\e[1m\e[30m"
-RED="\e[1m\e[31m"
-GREEN="\e[1m\e[32m"
-YELLOW="\e[1m\e[33m"
-BLUE="\e[1m\e[34m"
-PURPLE="\e[1m\e[35m"
-CYAN="\e[1m\e[36m"
-WHITE="\e[1m\e[37m"
+RESET='\e[1m\e[0m'
+BLACK='\e[1m\e[30m'
+RED='\e[1m\e[31m'
+GREEN='\e[1m\e[32m'
+YELLOW='\e[1m\e[33m'
+BLUE='\e[1m\e[34m'
+PURPLE='\e[1m\e[35m'
+CYAN='\e[1m\e[36m'
+WHITE='\e[1m\e[37m'
 
 # Print usage function
 function printUsage() {
-  if [[ -z ${ARGUMENTS} ]]; then
-    local arguments=""
+  local arguments=
+  if [[ -z ${ARGUMENTS+x} ]]; then
+    ARGUMENTS=
   else
-    local arguments="{{arguments}}"
+    arguments="{{arguments}}"
     ARGUMENTS="
 Arguments:
 ${ARGUMENTS}"
   fi
-  printf "\
-Usage: %s {{options}} %s
+  printf \
+'Usage: %s {{options}} %s
 Options:
   [-d|--debug]                 Enables debug mode, showing every executed statement.
-  [-h|--help]                  Prints usage (this text).%s
-" "$(basename "${0}")" "${arguments}" "${ARGUMENTS}"
+  [-h|--help]                  Prints usage (this text).%s' \
+    "$(basename "${0}")" "${arguments}" "${ARGUMENTS}"
 }
 
 # Parse arguments.
-i=1
-while (( i <= ${#} )); do
-  case "${!i}" in
-  # Debug mode
-  '-d'|'--debug') set -x; set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1)) ;;
-  # Help: display usage
-  '-h'|'--help') printUsage; exit 0 ;;
-  esac; (( ++i ))
-done
+function parseArguments() {
+  local i=1
+  while (( i <= ${#} )); do
+    case "${!i}" in
+    # Debug mode
+    '-d'|'--debug') set -x; set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1)) ;;
+    # Help: display usage
+    '-h'|'--help') printUsage; exit 0 ;;
+    esac; (( ++i ))
+  done
+}
 
 function additional() {
   local additional_arguments=
@@ -54,3 +60,5 @@ function additional() {
   esac
   printf "%s" "${additional_arguments}"
 }
+
+parseArguments

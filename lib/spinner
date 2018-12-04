@@ -21,22 +21,18 @@ _spinner_cycle=(
 _spinner_period='0.15s'
 
 if command -v tput &> /dev/null; then
-function _tput() {
-  :
-}
-else
   function _tput() {
     tput "${@}"
+  }
+else
+  function _tput() {
+    :
   }
 fi
 
 function _display_message() {
-  local mode=
-  local status=
-  while (( ${#} > 0 )); do
-    [[ -z ${mode} ]] && mode=${1} && shift && continue
-    [[ -z ${status} ]] && status=${1} && shift && continue
-  done
+  local mode=${1-}
+  local status=${2-}
   if [[ ${mode} = 'spinning' ]]; then
     status="${_spinner_cycle[$((_i%${#_spinner_cycle[@]}))]}"
     (( ++_i ))

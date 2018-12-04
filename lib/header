@@ -52,13 +52,4 @@ function parseArguments() {
   done
 }
 
-function additional() {
-  local additional_arguments=
-  case $- in
-    *x* ) additional_arguments+=" -d";;
-    * )   ;;
-  esac
-  printf "%s" "${additional_arguments}"
-}
-
 parseArguments

@@ -9,6 +9,11 @@ set -euo pipefail
 [[ ! -z ${_LIB_HEADER_INCLUDED+x} ]] && return 0
 _LIB_HEADER_INCLUDED=true
 
+# Get script path and append it to PATH so other scripts are callable.
+SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+PATH="${PATH}:${SCRIPT_PATH}"
+
 # Colors
 RESET='\e[1m\e[0m'
 BLACK='\e[1m\e[30m'

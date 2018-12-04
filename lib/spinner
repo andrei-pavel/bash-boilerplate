@@ -21,9 +21,19 @@ _spinner_cycle=(
 _spinner_period='0.15s'
 
 if command -v tput &> /dev/null; then
-  function _tput() {
-    tput "${@}"
-  }
+  if tput cvvis &> /dev/null; then
+    function _tput() {
+      tput "${@}"
+    }
+  elif tput -T 'xterm' cvvis &> /dev/null; then
+    function _tput() {
+      tput -T 'xterm' "${@}"
+    }
+  else
+    function _tput() {
+      :
+    }
+  fi
 else
   function _tput() {
     :

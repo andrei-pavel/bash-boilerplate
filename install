@@ -23,14 +23,14 @@ confirm_required=false
 while (( ${#} > 0 )); do
   case "${1}" in
   # Unrecognized argument
-  *) printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; printUsage; exit 1 ;;
+  *) printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; print-usage; exit 1 ;;
   esac; shift
 done
 
 #------------------------------------------------------------------------------#
 
-start_spinner "Installing..."
+start-spinner "Installing..."
 
 find "${SCRIPT_PATH}/lib" -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | xargs -I{} bash -c "install -Dm644 '${SCRIPT_PATH}/lib/{}' '/usr/local/bin/lib/{}'"
 
-stop_spinner ${?}
+stop-spinner ${?}

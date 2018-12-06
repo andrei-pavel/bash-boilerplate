@@ -6,8 +6,9 @@
 # Fail script if any command fails.
 set -euo pipefail
 
-[[ ! -z ${_LIB_HEADER_INCLUDED+x} ]] && return 0
-_LIB_HEADER_INCLUDED=true
+# Source guard
+[[ ! -z "${_LIB_HEADER_SOURCED+x}" ]] && return 0
+_LIB_HEADER_SOURCED=true
 
 # Get script path and append it to PATH so other scripts are callable.
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
@@ -26,7 +27,7 @@ CYAN='\e[1m\e[36m'
 WHITE='\e[1m\e[37m'
 
 # Print usage function
-function printUsage() {
+function print-usage() {
   local arguments=
   if [[ -z ${ARGUMENTS+x} ]]; then
     ARGUMENTS=
@@ -51,6 +52,6 @@ while (( i <= ${#} )); do
   # Debug mode
   '-d'|'--debug') set -x; set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1)) ;;
   # Help: display usage
-  '-h'|'--help') printUsage; exit 0 ;;
+  '-h'|'--help') print-usage; exit 0 ;;
   esac; (( ++i ))
 done

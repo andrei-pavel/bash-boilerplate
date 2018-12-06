@@ -25,19 +25,19 @@ while (( ${#} > 0 )); do
   '-n') shift && count=${1} ;;
   *)
     # [\$string]                    something other than \"Hello, world!\" to print
-    [[ -z ${string} ]] && string="${1}" && shift && continue
+    [[ -z "${string+x}" ]] && string="${1}" && shift && continue
     # Unrecognized argument
-    printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; printUsage; exit 1 ;;
+    printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; print-usage; exit 1 ;;
   esac; shift
 done
 
 mandatory count
 
-[[ -z ${string+x} ]] && string="Hello, world!"
+[[ -z "${string+x}" ]] && string="Hello, world!"
 
 #------------------------------------------------------------------------------#
 
-start_spinner "Printing..."
+start-spinner "Printing..."
 
 if ${confirm_required} && ! confirm; then
   exit 0
@@ -47,4 +47,4 @@ for (( i = 0; i < count; ++i )); do
   printf '%s\n' "${string}"
 done
 
-stop_spinner 0
+stop-spinner 0

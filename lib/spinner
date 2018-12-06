@@ -5,8 +5,9 @@
 #
 # Warning! Nested spinners are not supported.
 
-[[ ! -z ${_LIB_SPINNER_INCLUDED+x} ]] && return 0
-_LIB_SPINNER_INCLUDED=true
+# Source guard
+[[ ! -z "${_LIB_SPINNER_SOURCED+x}" ]] && return 0
+_LIB_SPINNER_SOURCED=true
 
 . "$(dirname "${BASH_SOURCE[0]}")/traps"
 
@@ -83,7 +84,7 @@ function _spinner {
   esac
 }
 
-function start_spinner() {
+function start-spinner() {
   if [[ ${-} = *x* || ! -z ${_spinner_pid+x} ]]; then
     return
   fi
@@ -96,7 +97,7 @@ function start_spinner() {
   disown
 }
 
-function stop_spinner() {
+function stop-spinner() {
   if [[ ${-} = *x* || -z ${_spinner_pid+x} ]]; then
     return
   fi

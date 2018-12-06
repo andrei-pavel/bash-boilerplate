@@ -34,7 +34,7 @@ function confirm() {
 
 function mandatory() {
   while (( ${#} > 0 )); do
-    if [[ -z ${!1+x} ]]; then
+    if [[ -z "${!1+x}" ]]; then
       printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2
       print-usage
       exit 2

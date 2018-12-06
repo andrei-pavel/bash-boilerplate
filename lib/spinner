@@ -67,7 +67,7 @@ function _spinner {
 
     stop)
       _tput cvvis
-      [[ -z ${_spinner_pid+x} ]] && return 1
+      [[ -z "${_spinner_pid+x}" ]] && return 1
       kill "${_spinner_pid}" > /dev/null 2>&1
       if [[ ${2} = 0 ]]; then
         status="${GREEN}DONE${RESET}"
@@ -85,7 +85,7 @@ function _spinner {
 }
 
 function start-spinner() {
-  if [[ ${-} = *x* || ! -z ${_spinner_pid+x} ]]; then
+  if [[ ${-} = *x* || ! -z "${_spinner_pid+x}" ]]; then
     return
   fi
   _message="${1}"
@@ -98,7 +98,7 @@ function start-spinner() {
 }
 
 function stop-spinner() {
-  if [[ ${-} = *x* || -z ${_spinner_pid+x} ]]; then
+  if [[ ${-} = *x* || -z "${_spinner_pid+x}" ]]; then
     return
   fi
   exec 1>&3

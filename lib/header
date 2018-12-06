@@ -29,7 +29,7 @@ WHITE='\e[1m\e[37m'
 # Print usage function
 function print-usage() {
   local arguments=
-  if [[ -z ${ARGUMENTS+x} ]]; then
+  if [[ -z "${ARGUMENTS+x}" ]]; then
     ARGUMENTS=
   else
     arguments="{{arguments}}"

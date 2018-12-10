@@ -9,7 +9,10 @@ set -euo pipefail
 # Print usage function
 function print-usage() {
   local arguments=
-  if [[ ! -z "${ARGUMENTS}" ]]; then
+  if [[ -z "${ARGUMENTS}" ]]; then
+    ARGUMENTS="
+"
+  else
     arguments="{{arguments}}"
     ARGUMENTS="
 Arguments:
@@ -19,7 +22,7 @@ ${ARGUMENTS}"
 'Usage: %s {{options}} %s
 Options:
   [-d|--debug]                 Enables debug mode, showing every executed statement.
-  [-h|--help]                  Prints usage (this text).%s\n' \
+  [-h|--help]                  Prints usage (this text).%s' \
     "$(basename "${0}")" "${arguments}" "${ARGUMENTS}"
 }
 

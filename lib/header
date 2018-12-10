@@ -6,32 +6,10 @@
 # Fail script if any command fails.
 set -euo pipefail
 
-# Source guard
-[[ ! -z "${_LIB_HEADER_SOURCED+x}" ]] && return 0
-_LIB_HEADER_SOURCED=true
-
-# Get script path and append it to PATH so other scripts are callable.
-SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-PATH="${PATH}:${SCRIPT_PATH}"
-
-# Colors
-RESET='\e[1m\e[0m'
-BLACK='\e[1m\e[30m'
-RED='\e[1m\e[31m'
-GREEN='\e[1m\e[32m'
-YELLOW='\e[1m\e[33m'
-BLUE='\e[1m\e[34m'
-PURPLE='\e[1m\e[35m'
-CYAN='\e[1m\e[36m'
-WHITE='\e[1m\e[37m'
-
 # Print usage function
 function print-usage() {
   local arguments=
-  if [[ -z "${ARGUMENTS+x}" ]]; then
-    ARGUMENTS=
-  else
+  if [[ ! -z "${ARGUMENTS}" ]]; then
     arguments="{{arguments}}"
     ARGUMENTS="
 Arguments:
@@ -41,7 +19,7 @@ ${ARGUMENTS}"
 'Usage: %s {{options}} %s
 Options:
   [-d|--debug]                 Enables debug mode, showing every executed statement.
-  [-h|--help]                  Prints usage (this text).%s' \
+  [-h|--help]                  Prints usage (this text).%s\n' \
     "$(basename "${0}")" "${arguments}" "${ARGUMENTS}"
 }
 
@@ -55,3 +33,26 @@ while (( i <= ${#} )); do
   '-h'|'--help') print-usage; exit 0 ;;
   esac; (( ++i ))
 done
+
+# Source guard
+[[ ! -z "${_LIB_HEADER_SOURCED+x}" ]] && return 0
+export _LIB_HEADER_SOURCED=true
+
+# Export functions
+export -f print-usage
+
+# Get script path and append it to PATH so other scripts are callable.
+export SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+export LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+export PATH="${PATH}:${SCRIPT_PATH}"
+
+# Colors
+export RESET='\e[1m\e[0m'
+export BLACK='\e[1m\e[30m'
+export RED='\e[1m\e[31m'
+export GREEN='\e[1m\e[32m'
+export YELLOW='\e[1m\e[33m'
+export BLUE='\e[1m\e[34m'
+export PURPLE='\e[1m\e[35m'
+export CYAN='\e[1m\e[36m'
+export WHITE='\e[1m\e[37m'

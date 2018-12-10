@@ -7,19 +7,27 @@
 
 # Source guard
 [[ ! -z "${_LIB_SPINNER_SOURCED+x}" ]] && return 0
-_LIB_SPINNER_SOURCED=true
+export _LIB_SPINNER_SOURCED=true
 
 . "$(dirname "${BASH_SOURCE[0]}")/traps"
 
-_spinner_cycle=(
-'[●   ]'
-'[ ●  ]'
-'[  ● ]'
-'[   ●]'
-'[  ● ]'
-'[ ●  ]'
-)
-_spinner_period='0.15s'
+function _spinner_cycle () {
+  _cycle=(
+    '[●   ]'
+    '[ ●  ]'
+    '[  ● ]'
+    '[   ●]'
+    '[  ● ]'
+    '[ ●  ]'
+  )
+  if [[ -z "${1+x}" ]]; then
+    printf '%d' "${#_cycle[@]}"
+  else
+    printf '%s' "${_cycle[${1}]}"
+  fi
+}
+export -f _spinner_cycle
+export _spinner_period='0.15s'
 
 if command -v tput &> /dev/null; then
   if tput cvvis &> /dev/null; then
@@ -40,25 +48,27 @@ else
     :
   }
 fi
+export -f _tput
 
 function _display_message() {
   local mode=${1-}
   local status=${2-}
-  if [[ ${mode} = 'spinning' ]]; then
-    status="${_spinner_cycle[$((_i%${#_spinner_cycle[@]}))]}"
+  if [[ "${mode}" = 'spinning' ]]; then
+    status="$(_spinner_cycle $(( _i % $(_spinner_cycle) )) )"
     (( ++_i ))
   fi
-  if [[ ${mode} != 'first' ]]; then
+  if [[ "${mode}" != 'first' ]]; then
     printf '\e[1A'
   fi
   printf "\\r%s%$(($(_tput cols)-${#_message}-8))s${status}\\n" "${_message}"
 }
+export -f _display_message
 
 function _spinner {
-  case ${1} in
+  case ${1-} in
     start)
       _tput civis
-      _i=0
+      export _i=0
       while true; do
         _display_message 'spinning'
         sleep ${_spinner_period}
@@ -66,10 +76,10 @@ function _spinner {
       ;;
 
     stop)
-      _tput cvvis
       [[ -z "${_spinner_pid+x}" ]] && return 1
       kill "${_spinner_pid}" > /dev/null 2>&1
-      if [[ ${2} = 0 ]]; then
+      local status
+      if (( ${2-0} == 0 )); then
         status="${GREEN}DONE${RESET}"
       else
         status="${GREEN}FAIL${RESET}"
@@ -83,27 +93,31 @@ function _spinner {
       ;;
   esac
 }
+export -f _spinner
 
 function start-spinner() {
-  if [[ ${-} = *x* || ! -z "${_spinner_pid+x}" ]]; then
+  if [[ "${-}" = *x* || ! -z "${_spinner_pid+x}" ]]; then
     return
   fi
-  _message="${1}"
+  export _message="${1-}"
   _display_message 'first'
   _spinner 'start' &
-  _buffer="$(mktemp)"
+  export _buffer="$(mktemp)"
   exec 3>&1 1>"${_buffer}" 2>&1
-  _spinner_pid="${!}"
+  export _spinner_pid="${!}"
   disown
 }
+export -f start-spinner
 
 function stop-spinner() {
-  if [[ ${-} = *x* || -z "${_spinner_pid+x}" ]]; then
+  _tput cvvis
+  if [[ "${-}" = *x* || -z "${_spinner_pid+x}" ]]; then
     return
   fi
   exec 1>&3
-  _spinner 'stop' "${1}"
+  _spinner 'stop' "${1-0}"
   unset _spinner_pid
   cat "${_buffer}"
   rm "${_buffer}"
 }
+export -f stop-spinner

@@ -5,7 +5,7 @@
 
 # Source guard
 [[ ! -z "${_LIB_TRAPS_SOURCED+x}" ]] && return 0
-_LIB_TRAPS_SOURCED=true
+export _LIB_TRAPS_SOURCED=true
 
 # Traps
 # Accounts for spinner as well
@@ -22,9 +22,10 @@ function traps() {
       ${on_trap}
       printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
       exit \${return_code}
-    " ${t}
+    " "${t}"
   done
 }
+export -f traps
 
 # Default traps
 traps

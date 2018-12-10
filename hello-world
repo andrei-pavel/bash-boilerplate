@@ -16,7 +16,6 @@ SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
 . "${SCRIPT_PATH}/lib/traps"
 
 # Parse arguments.
-confirm_required=false
 while (( ${#} > 0 )); do
   case "${1}" in
   # [-c|--confirm]               whether to ask user for confirmation
@@ -33,6 +32,8 @@ done
 
 mandatory count
 
+# Default arguments
+[[ -z "${confirm_required+x}" ]] && confirm_required=false
 [[ -z "${string+x}" ]] && string="Hello, world!"
 
 #------------------------------------------------------------------------------#

@@ -5,7 +5,8 @@
 
 # Header
 ARGUMENTS="\
-  [-c|--confirm]               whether to ask user for confirmation
+  [-a|--approval]              whether to ask user for approval
+  [-c|--config]                specify path to the configuration file
   -n \$count                    print \$count times
   [\$string]                    something other than \"Hello, world!\" to print
 "
@@ -18,8 +19,10 @@ SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
 # Parse arguments.
 while (( ${#} > 0 )); do
   case "${1}" in
-  # [-c|--confirm]               whether to ask user for confirmation
-  '-c'|'--confirm') confirm_required=true ;;
+  # [-a|--approval]              whether to ask user for approval
+  '-a'|'--approval') approval_required=true ;;
+  # [-c|--config]                specify path to the configuration file
+  '-c'|'--config') shift && config=${1} ;;
   # -n \$count                    print \$count times
   '-n') shift && count=${1} ;;
   *)
@@ -33,19 +36,28 @@ done
 mandatory count
 
 # Default arguments
-[[ -z "${confirm_required+x}" ]] && confirm_required=false
+[[ -z "${approval_required+x}" ]] && approval_required=false
 [[ -z "${string+x}" ]] && string="Hello, world!"
 
 #------------------------------------------------------------------------------#
 
-start-spinner "Printing..."
-
-if ${confirm_required} && ! confirm; then
+if ${approval_required} && ! confirm; then
   exit 0
 fi
 
+if [[ -n "${config+x}" ]]; then
+  if command -v yq &> /dev/null; then
+    start-spinner 'Printing entries from config.yaml...'
+    yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${config}"
+    stop-spinner
+  else
+    printf 'yq is required to read %s. Skipping...' "${config}" >2
+  fi
+
+fi
+
+start-spinner 'Printing...'
 for (( i = 0; i < count; ++i )); do
   printf '%s\n' "${string}"
 done
-
 stop-spinner 0

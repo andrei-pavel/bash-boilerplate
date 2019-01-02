@@ -22,12 +22,13 @@ arguments.
 ## Usage
 
 ```bash
-Usage: hello-world {{options}} {{arguments}
+Usage: hello-world {{options}} {{arguments}}
 Options:
   [-d|--debug]                 Enables debug mode, showing every executed statement.
   [-h|--help]                  Prints usage (this text).
 Arguments:
-  [-c]                         whether to ask user for confirmation
+  [-a|--approval]              whether to ask user for approval
+  [-c|--config]                specify path to the configuration file
   -n $count                    print $count times
   [$string]                    something other than "Hello, world!" to print
 ```

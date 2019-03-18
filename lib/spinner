@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Copyright (C) 2017-2019 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 #
 # Warning! Nested spinners are not supported.
 
 # Source guard
-[[ ! -z "${_LIB_SPINNER_SOURCED+x}" ]] && return 0
+[[ -n "${_LIB_SPINNER_SOURCED+x}" ]] && return 0
 export _LIB_SPINNER_SOURCED=true
 
 . "$(dirname "${BASH_SOURCE[0]}")/traps"
@@ -88,21 +88,27 @@ function _spinner {
       ;;
 
     *)
-      printf 'ERROR: invalid argument, try {start/stop}' &>2
+      printf 'ERROR: invalid argument, try {start/stop}' >&2
       exit 2
       ;;
   esac
 }
 export -f _spinner
 
+function are-spinners-enabled() {
+  [[ -z "${SPINNERS_ENABLED+x}" || "${SPINNERS_ENABLED}" = true ]]
+}
+export -f are-spinners-enabled
+
 function start-spinner() {
-  if [[ "${-}" = *x* || ! -z "${_spinner_pid+x}" ]]; then
+  if [[ "${-}" = *x* || -n "${_spinner_pid+x}" ]] || ! are-spinners-enabled; then
     return
   fi
   export _message="${1-}"
   _display_message 'first'
   _spinner 'start' &
-  export _buffer="$(mktemp)"
+  _buffer="$(mktemp)"
+  export _buffer
   exec 3>&1 1>"${_buffer}" 2>&1
   export _spinner_pid="${!}"
   disown
@@ -111,7 +117,7 @@ export -f start-spinner
 
 function stop-spinner() {
   _tput cvvis
-  if [[ "${-}" = *x* || -z "${_spinner_pid+x}" ]]; then
+  if [[ "${-}" = *x* || -z "${_spinner_pid+x}" ]] || ! are-spinners-enabled; then
     return
   fi
   exec 1>&3
@@ -121,3 +127,13 @@ function stop-spinner() {
   rm "${_buffer}"
 }
 export -f stop-spinner
+
+function disable-spinners() {
+  export SPINNERS_ENABLED=false
+}
+export -f disable-spinners
+
+function enable-spinners() {
+  export SPINNERS_ENABLED=true
+}
+export -f enable-spinners

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Copyright (C) 2017-2019 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
 # Fail script if any command fails.
@@ -38,7 +38,7 @@ while (( i <= ${#} )); do
 done
 
 # Source guard
-[[ ! -z "${_LIB_HEADER_SOURCED+x}" ]] && return 0
+[[ -n "${_LIB_HEADER_SOURCED+x}" ]] && return 0
 export _LIB_HEADER_SOURCED=true
 
 # Export functions

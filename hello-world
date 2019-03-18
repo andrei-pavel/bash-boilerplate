@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Copyright (C) 2017-2019 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
 # Header
@@ -48,16 +48,25 @@ fi
 if [[ -n "${config+x}" ]]; then
   if command -v yq &> /dev/null; then
     start-spinner 'Printing entries from config.yaml...'
-    yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${config}"
-    stop-spinner
+    for (( i = 0; i < count; ++i )); do
+      yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${config}"
+    done
+    stop-spinner ${?}
   else
-    printf 'yq is required to read %s. Skipping...' "${config}" >2
+    printf 'yq is required to read %s. Skipping...' "${config}" >&2
   fi
-
+  exit ${?}
 fi
 
 start-spinner 'Printing...'
 for (( i = 0; i < count; ++i )); do
   printf '%s\n' "${string}"
 done
-stop-spinner 0
+stop-spinner ${?}
+
+disable-spinners
+stop-spinner
+start-spinner 'Go crazy here!'
+start-spinner 'Even order doesn''t count.'
+start-spinner 'Spinners are off.'
+enable-spinners

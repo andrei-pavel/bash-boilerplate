@@ -21,20 +21,58 @@ ${ARGUMENTS}"
   printf \
 'Usage: %s {{options}} %s
 Options:
-  [-d|--debug]                 Enables debug mode, showing every executed statement.
+  [-c|--config $config_yaml]   Reads from a YAML configuration and converts all
+                               key-value pairs with literal values to
+                               environment variables.
+  [-d|--debug]                 Enables debug mode, showing every executed
+                               statement.
   [-h|--help]                  Prints usage (this text).%s' \
     "$(basename "${0}")" "${arguments}" "${ARGUMENTS}"
 }
+
+SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+
+# Colors
+RESET='\e[1m\e[0m'
+BLACK='\e[1m\e[30m'
+RED='\e[1m\e[31m'
+GREEN='\e[1m\e[32m'
+YELLOW='\e[1m\e[33m'
+BLUE='\e[1m\e[34m'
+PURPLE='\e[1m\e[35m'
+CYAN='\e[1m\e[36m'
+WHITE='\e[1m\e[37m'
 
 # Parse arguments.
 i=1
 while (( i <= ${#} )); do
   case "${!i}" in
-  # Debug mode
-  '-d'|'--debug') set -x; set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1)) ;;
-  # Help: display usage
-  '-h'|'--help') print-usage; exit 0 ;;
-  esac; (( ++i ))
+  # [-c|--config $config_yaml]   Reads from a YAML configuration and converts all
+  #                              key-value pairs with literal values to
+  #                              environment variables.
+  '-c'|'--config')
+    ii=$((i + 1))
+    if (( ii > ${#} )); then
+      printf "${RED}ERROR: YAML configuration file not provided for -c|--config option${RESET}\\n" >&2
+      exit 1
+    fi
+    . "${LIB_PATH}/yaml-to-env" "${!ii}"
+    set -- ${*:1:$((i - 1))} ${*:$((i + 2))}; i=$((i - 2))
+    ;;
+  # [-d|--debug]                 Enables debug mode, showing every executed
+  #                              statement.
+  '-d'|'--debug')
+    set -x
+    set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1))
+    ;;
+  # [-h|--help]                  Prints usage (this text).
+  '-h'|'--help')
+    print-usage
+    exit 0
+    ;;
+  esac;
+  i=$(( ++i ))
 done
 
 # Source guard
@@ -45,17 +83,17 @@ export _LIB_HEADER_SOURCED=true
 export -f print-usage
 
 # Get script path and append it to PATH so other scripts are callable.
-export SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-export LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+export LIB_PATH
+export SCRIPT_PATH
 export PATH="${PATH}:${SCRIPT_PATH}"
 
 # Colors
-export RESET='\e[1m\e[0m'
-export BLACK='\e[1m\e[30m'
-export RED='\e[1m\e[31m'
-export GREEN='\e[1m\e[32m'
-export YELLOW='\e[1m\e[33m'
-export BLUE='\e[1m\e[34m'
-export PURPLE='\e[1m\e[35m'
-export CYAN='\e[1m\e[36m'
-export WHITE='\e[1m\e[37m'
+export RESET
+export BLACK
+export RED
+export GREEN
+export YELLOW
+export BLUE
+export PURPLE
+export CYAN
+export WHITE

@@ -54,8 +54,8 @@ function _display_message() {
   local mode=${1-}
   local status=${2-}
   if [[ "${mode}" = 'spinning' ]]; then
-    status="$(_spinner_cycle $(( _i % $(_spinner_cycle) )) )"
-    (( ++_i ))
+    status="$(_spinner_cycle $(( _s % $(_spinner_cycle) )) )"
+    (( ++_s ))
   fi
   if [[ "${mode}" != 'first' ]]; then
     printf '\e[1A'
@@ -68,7 +68,7 @@ function _spinner {
   case ${1-} in
     start)
       _tput civis
-      export _i=0
+      export _s=0
       while true; do
         _display_message 'spinning'
         sleep ${_spinner_period}

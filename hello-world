@@ -6,7 +6,7 @@
 # Header
 ARGUMENTS="\
   [-a|--approval]              whether to ask user for approval
-  [-c|--config]                specify path to the configuration file
+  [-y|--yaml]                  specify path to the configuration file
   -n \$count                    print \$count times
   [\$string]                    something other than \"Hello, world!\" to print
 "
@@ -21,8 +21,8 @@ while (( ${#} > 0 )); do
   case "${1}" in
   # [-a|--approval]              whether to ask user for approval
   '-a'|'--approval') approval_required=true ;;
-  # [-c|--config]                specify path to the configuration file
-  '-c'|'--config') shift && config=${1} ;;
+  # [-y|--yaml]                specify path to the configuration file
+  '-y'|'--yaml') shift && yaml=${1} ;;
   # -n \$count                    print \$count times
   '-n') shift && count=${1} ;;
   *)
@@ -45,24 +45,23 @@ if ${approval_required} && ! confirm; then
   exit 0
 fi
 
-if [[ -n "${config+x}" ]]; then
+if [[ -n "${yaml+x}" ]]; then
   if command -v yq &> /dev/null; then
-    start-spinner 'Printing entries from config.yaml...'
+    start-spinner "Printing entries from ${yaml}..."
     for (( i = 0; i < count; ++i )); do
-      yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${config}"
+      yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${yaml}"
     done
     stop-spinner ${?}
   else
-    printf 'yq is required to read %s. Skipping...' "${config}" >&2
+    printf 'yq is required to read %s. Skipping...' "${yaml}" >&2
   fi
-  exit ${?}
+else
+  start-spinner 'Printing...'
+  for (( i = 0; i < count; ++i )); do
+    printf '%s\n' "${string}"
+  done
+  stop-spinner ${?}
 fi
-
-start-spinner 'Printing...'
-for (( i = 0; i < count; ++i )); do
-  printf '%s\n' "${string}"
-done
-stop-spinner ${?}
 
 disable-spinners
 stop-spinner
@@ -71,7 +70,6 @@ start-spinner 'Even order doesn''t count.'
 start-spinner 'Spinners are off.'
 enable-spinners
 
-. ./lib/yaml-to-env "${SCRIPT_PATH}/config.yaml"
-start-spinner 'Printing environment variables taken from YAML...'
-printf 'this: %s\n' "${this}"
-stop-spinner ${?}
+if [[ -n "${this+x}" ]]; then
+  printf 'this %s\n' "${this}"
+fi

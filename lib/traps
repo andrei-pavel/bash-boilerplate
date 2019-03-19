@@ -19,7 +19,6 @@ function traps() {
       return_code=\${?}
       trap - EXIT
       declare -f stop-spinner &> /dev/null && stop-spinner \${return_code}
-      tput cvvis
       ${on_trap}
       printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
       exit \${return_code}

@@ -70,3 +70,8 @@ start-spinner 'Go crazy here!'
 start-spinner 'Even order doesn''t count.'
 start-spinner 'Spinners are off.'
 enable-spinners
+
+. ./lib/yaml-to-env "${SCRIPT_PATH}/config.yaml"
+start-spinner 'Printing environment variables taken from YAML...'
+printf 'this: %s\n' "${this}"
+stop-spinner ${?}

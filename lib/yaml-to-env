@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Copyright (C) 2017-2019 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Licensed under the MIT License
+
+# Source guard
+[[ -n "${_YAML_TO_ENV+x}" ]] && return 0
+export _YAML_TO_ENV=true
+
+# Header
+lib_script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+. "${lib_script_path}/spinner"
+
+#------------------------------------------------------------------------------#
+
+for dependency in sed yq; do
+  if ! command -v yq &> /dev/null; then
+    printf 'ERROR: %s is missing.' "${dependency}" >&2
+    exit 2
+  fi
+done
+
+start-spinner 'Converting YAML to environment variables...'
+rootdir="$(pwd)"
+env="$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then "\(.key)=(\(.value |@sh?))" else . end) | .[]' < "${1-./config.yaml}")"
+env="${env//_ROOTDIR/${rootdir}}"
+env="$(sed 's/^/export /g' <<< "${env}")"
+eval ${env}
+stop-spinner ${?}

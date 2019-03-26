@@ -46,15 +46,12 @@ if ${approval_required} && ! confirm; then
 fi
 
 if [[ -n "${yaml+x}" ]]; then
-  if command -v yq &> /dev/null; then
-    start-spinner "Printing entries from ${yaml}..."
-    for (( i = 0; i < count; ++i )); do
-      yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${yaml}"
-    done
-    stop-spinner ${?}
-  else
-    printf 'yq is required to read %s. Skipping...' "${yaml}" >&2
-  fi
+  mandatory-command yq
+  start-spinner "Printing entries from ${yaml}..."
+  for (( i = 0; i < count; ++i )); do
+    yq -r '.data | to_entries | map(select(.value != null) | "\(.key) \(.value)") | .[]' < "${yaml}"
+  done
+  stop-spinner ${?}
 else
   start-spinner 'Printing...'
   for (( i = 0; i < count; ++i )); do

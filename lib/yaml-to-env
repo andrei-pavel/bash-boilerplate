@@ -22,7 +22,7 @@ done
 
 start-spinner 'Converting YAML to environment variables...'
 rootdir="$(pwd)"
-env="$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then "\(.key)=(\(.value |@sh?))" else . end) | .[]' < "${1-./config.yaml}")"
+env="$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then .value == null // "\(.key)=(\((.value |@sh?)))" else . end) | .[]' < "${1-./config.yaml}")"
 env="${env//_ROOTDIR/${rootdir}}"
 env="$(sed 's/^/export /g' <<< "${env}")"
 eval ${env}

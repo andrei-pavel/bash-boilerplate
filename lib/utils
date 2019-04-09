@@ -10,16 +10,6 @@ export _LIB_UTILS_SOURCED=true
 # Header
 . "$(dirname "${BASH_SOURCE[0]}")/header"
 
-function additional() {
-  local additional_arguments=
-  case $- in
-    *x* ) additional_arguments+=" -d";;
-    * )   ;;
-  esac
-  printf "%s" "${additional_arguments}"
-}
-export -f additional
-
 function confirm() {
   # call with a prompt string or use a default
   read -r -p "${1:-Are you sure? [y/N]} " response

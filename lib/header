@@ -45,6 +45,7 @@ CYAN='\e[1m\e[36m'
 WHITE='\e[1m\e[37m'
 
 # Parse arguments.
+_ADDITIONAL_ARGUMENTS=
 i=1
 while (( i <= ${#} )); do
   case "${!i}" in
@@ -58,6 +59,7 @@ while (( i <= ${#} )); do
       exit 1
     fi
     . "${LIB_PATH}/yaml-to-env" "${!ii}"
+    _ADDITIONAL_ARGUMENTS+=" -c ${!ii}"
     set -- ${*:1:$((i - 1))} ${*:$((i + 2))}; i=$((i - 2))
     ;;
   # [-d|--debug]                 Enables debug mode, showing every executed
@@ -65,9 +67,11 @@ while (( i <= ${#} )); do
   '-d'|'--debug')
     set -x
     set -- ${*:1:$((i - 1))} ${*:$((i + 1))}; i=$((i - 1))
+    _ADDITIONAL_ARGUMENTS+=" -d"
     ;;
   # [-h|--help]                  Prints usage (this text).
   '-h'|'--help')
+    _ADDITIONAL_ARGUMENTS+=" -h"
     print-usage
     exit 0
     ;;
@@ -79,7 +83,13 @@ done
 [[ -n "${_LIB_HEADER_SOURCED+x}" ]] && return 0
 export _LIB_HEADER_SOURCED=true
 
-# Export functions
+function additional() {
+  printf '%s' "${_ADDITIONAL_ARGUMENTS}"
+}
+
+# Export variables and functions
+export _ADDITIONAL_ARGUMENTS
+export -f additional
 export -f print-usage
 
 # Get script path and append it to PATH so other scripts are callable.

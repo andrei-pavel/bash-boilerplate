@@ -62,6 +62,7 @@ fi
 
 disable-spinners
 stop-spinner
+stop-spinner
 start-spinner 'Go crazy here!'
 start-spinner 'Even order doesn''t count.'
 start-spinner 'Spinners are off.'
@@ -69,4 +70,8 @@ enable-spinners
 
 if [[ -n "${this+x}" ]]; then
   printf 'this %s\n' "${this}"
+fi
+
+if [[ -n "${list+x}" ]]; then
+  printf "${list[@]}"
 fi

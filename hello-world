@@ -73,5 +73,9 @@ if [[ -n "${this+x}" ]]; then
 fi
 
 if [[ -n "${list+x}" ]]; then
-  printf "${list[@]}"
+  printf 'list: ( '
+  for i in $(seq 0 $(( ${#list[@]} - 1 ))); do
+    printf '%s ' "${list[${i}]}"
+  done
+  printf ')\n'
 fi

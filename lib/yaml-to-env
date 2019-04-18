@@ -9,16 +9,13 @@ export _YAML_TO_ENV=true
 
 # Header
 lib_script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+. "${lib_script_path}/utils"
 . "${lib_script_path}/spinner"
 
 #------------------------------------------------------------------------------#
 
-for dependency in sed yq; do
-  if ! command -v yq &> /dev/null; then
-    printf 'ERROR: %s is missing.' "${dependency}" >&2
-    exit 2
-  fi
-done
+mandatory-command sed
+mandatory-command yq
 
 start-spinner 'Converting YAML to environment variables...'
 if yq 'walk(.)' <<< '{}' &> /dev/null; then

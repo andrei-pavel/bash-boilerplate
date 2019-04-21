@@ -6,8 +6,8 @@
 # Header
 ARGUMENTS="\
   [-a|--approval]              whether to ask user for approval
-  [-y|--yaml]                  specify path to the configuration file
   -n \$count                    print \$count times
+  [-y|--yaml \$yaml]            specify path to the configuration file
   [\$string]                    something other than \"Hello, world!\" to print
 "
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
@@ -21,10 +21,10 @@ while (( ${#} > 0 )); do
   case "${1}" in
   # [-a|--approval]              whether to ask user for approval
   '-a'|'--approval') approval_required=true ;;
-  # [-y|--yaml]                specify path to the configuration file
-  '-y'|'--yaml') shift && yaml=${1} ;;
   # -n \$count                    print \$count times
   '-n') shift && count=${1} ;;
+  # [-y|--yaml]                specify path to the configuration file
+  '-y'|'--yaml') shift && yaml=${1} ;;
   *)
     # [\$string]                    something other than \"Hello, world!\" to print
     [[ -z "${string+x}" ]] && string="${1}" && shift && continue

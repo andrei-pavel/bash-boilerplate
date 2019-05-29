@@ -129,11 +129,13 @@ function stop-spinner() {
 export -f stop-spinner
 
 function disable-spinners() {
+  traps "${the_trap}" --return-code-only
   export SPINNERS_ENABLED=false
 }
 export -f disable-spinners
 
 function enable-spinners() {
+  traps "${the_trap}"
   export SPINNERS_ENABLED=true
 }
 export -f enable-spinners

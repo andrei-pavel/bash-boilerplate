@@ -10,22 +10,35 @@ export _LIB_TRAPS_SOURCED=true
 # Traps
 # Accounts for spinner as well
 function traps() {
-  local on_trap=
-  if (( ${#} > 0 )); then
-    on_trap=${1}
-  fi
+  the_trap=${1-}
+  local force=${2-}
   for t in HUP INT QUIT KILL TERM EXIT; do
-    trap "\
-      return_code=\${?}
-      trap - EXIT
-      declare -f stop-spinner &> /dev/null && stop-spinner \${return_code}
-      ${on_trap}
-      printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
-      exit \${return_code}
-    " "${t}"
+    if [[ ${force} = '--force' ]]; then
+      trap "
+        ${the_trap}
+      " ${t}
+    elif [[ ${force} = '--return-code-only' ]]; then
+      trap "
+        return_code=\${?}
+        trap - EXIT
+        ${the_trap}
+        printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+        exit \${return_code}
+      " ${t}
+    else
+      trap "
+        return_code=\${?}
+        trap - EXIT
+        declare -f stop-spinner &> /dev/null && stop-spinner \${return_code}
+        ${the_trap}
+        printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+        exit \${return_code}
+      " ${t}
+    fi
   done
 }
 export -f traps
+export the_trap
 
 # Default traps
 traps

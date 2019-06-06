@@ -3,10 +3,6 @@
 # Copyright (C) 2017-2019 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
-# Source guard
-[[ -n "${_YAML_TO_ENV+x}" ]] && return 0
-export _YAML_TO_ENV=true
-
 # Header
 lib_script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 . "${lib_script_path}/utils"

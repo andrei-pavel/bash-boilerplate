@@ -44,10 +44,6 @@ PURPLE='\e[1m\e[35m'
 CYAN='\e[1m\e[36m'
 WHITE='\e[1m\e[37m'
 
-# Source guard
-[[ -n "${_LIB_HEADER_SOURCED+x}" ]] && return 0
-export _LIB_HEADER_SOURCED=true
-
 # Parse arguments.
 _ADDITIONAL_ARGUMENTS=
 _i=1
@@ -62,9 +58,10 @@ while (( _i <= ${#} )); do
       printf "${RED}ERROR: YAML configuration file not provided for -c|--config option${RESET}\\n" >&2
       exit 1
     fi
-    . "${LIB_PATH}/yaml-to-env" "${!_ii}"
-    _ADDITIONAL_ARGUMENTS+=" -c ${!_ii}"
+    yaml=${!_ii}
+    _ADDITIONAL_ARGUMENTS+=" -c ${yaml}"
     set -- ${*:1:$((_i - 1))} ${*:$((_i + 2))}
+    . "${LIB_PATH}/yaml-to-env" "${yaml}"
     _i=$(( _i - 1))
     ;;
   # [-d|--debug]                 Enables debug mode, showing every executed
@@ -84,6 +81,10 @@ while (( _i <= ${#} )); do
   esac;
   _i=$(( _i + 1 ))
 done
+
+# Source guard
+[[ -n "${_LIB_HEADER_SOURCED+x}" ]] && return 0
+export _LIB_HEADER_SOURCED=true
 
 function additional() {
   printf '%s' "${_ADDITIONAL_ARGUMENTS}"

@@ -109,7 +109,15 @@ function start-spinner() {
   _spinner 'start' &
   _buffer="$(mktemp)"
   export _buffer
-  exec 3>&1 1>"${_buffer}" 2>&1
+  if [[ -z "${SPINNERS_OUTPUT+x}" || ${SPINNERS_OUTPUT} = 'full-output' ]]; then
+    exec 3>&1 1>"${_buffer}" 2>&1
+  elif [[ ${SPINNERS_OUTPUT} = 'stdout-only' ]]; then
+    exec 3>&1 1>"${_buffer}" 2>/dev/null
+  elif [[ ${SPINNERS_OUTPUT} = 'stderr-only' ]]; then
+    exec 3>&1 1>/dev/null 2>"${_buffer}"
+  elif [[ ${SPINNERS_OUTPUT} = 'no-output' ]]; then
+    exec 3>&1 1>/dev/null 2>/dev/null
+  fi
   export _spinner_pid="${!}"
   disown
 }
@@ -133,6 +141,18 @@ function disable-spinners() {
   export SPINNERS_ENABLED=false
 }
 export -f disable-spinners
+
+function configure-spinner-output() {
+  export SPINNERS_OUTPUT=${1-}
+  if [[ ${SPINNERS_OUTPUT} != 'full-output' &&
+        ${SPINNERS_OUTPUT} != 'stdout-only' &&
+        ${SPINNERS_OUTPUT} != 'stderr-only' &&
+        ${SPINNERS_OUTPUT} != 'no-output' ]]; then
+    printf 'wrong spinner output %s\n' "${mode}" 2>/dev/null
+    return 1
+  fi
+}
+export -f configure-spinner-output
 
 function enable-spinners() {
   traps "${the_trap}"

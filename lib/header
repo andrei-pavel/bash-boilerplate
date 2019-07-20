@@ -45,7 +45,7 @@ CYAN='\e[1m\e[36m'
 WHITE='\e[1m\e[37m'
 
 # Parse arguments.
-_ADDITIONAL_ARGUMENTS=
+[[ -z ${_ADDITIONAL_ARGUMENTS+x} ]] && _ADDITIONAL_ARGUMENTS=
 _i=1
 while (( _i <= ${#} )); do
   case "${!_i}" in
@@ -59,7 +59,6 @@ while (( _i <= ${#} )); do
       exit 1
     fi
     yaml=${!_ii}
-    _ADDITIONAL_ARGUMENTS+=" -c ${yaml}"
     set -- ${*:1:$((_i - 1))} ${*:$((_i + 2))}
     . "${LIB_PATH}/yaml-to-env" "${yaml}"
     _i=$(( _i - 1))

@@ -60,9 +60,20 @@ else
   stop-spinner ${?}
 fi
 
+start-spinner 'Nested spinners disable the inner ones...'
+start-spinner 'This one...'
+start-spinner 'And this one...'
+sleep 1s
+stop-spinner 0
+stop-spinner 0
+start-spinner 'And this one...'
+sleep 1s
+stop-spinner 0
+stop-spinner 0
+
 disable-spinners
-stop-spinner
-stop-spinner
+stop-spinner 0
+stop-spinner 0
 start-spinner 'Go crazy here!'
 start-spinner 'Even order doesn''t count.'
 start-spinner 'Spinners are off.'

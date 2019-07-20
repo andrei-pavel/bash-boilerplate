@@ -129,9 +129,12 @@ function stop-spinner() {
     return
   fi
   exec 1>&3
-  _spinner 'stop' "${1-0}"
+  local exit_code="${1-0}"
+  _spinner 'stop' "${exit_code}"
   unset _spinner_pid
-  cat "${_buffer}"
+  if (( exit_code != 0 )); then
+    cat "${_buffer}"
+  fi
   rm "${_buffer}"
 }
 export -f stop-spinner

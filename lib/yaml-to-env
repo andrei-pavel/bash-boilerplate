@@ -19,7 +19,7 @@ if yq 'walk(.)' <<< '{}' &> /dev/null; then
 else
   # Support for older versions of yq that don't have the walk() function
   # This makes it lack support for multiple levels of hierarchy in the YAML.
-  env="$(yq -r 'to_entries | map(select(.value != null) | "\(.key)=(\(.value | @sh))") | .[]' < "${1-./config.yaml}")"
+  env="$(yq -r 'to_entries | map(select(.value != null) | "\(.key)=(\(.value))") | .[]' < "${1-./config.yaml}")"
 fi
 env="$(sed 's/^/export /g' <<< "${env}")"
 eval ${env}

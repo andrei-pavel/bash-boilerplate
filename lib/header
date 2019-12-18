@@ -9,7 +9,7 @@ set -euo pipefail
 # Print usage function
 function print-usage() {
   local arguments=
-  if [[ -z "${ARGUMENTS}" ]]; then
+  if [[ -z "${ARGUMENTS+x}" ]]; then
     ARGUMENTS="
 "
   else

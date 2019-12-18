@@ -150,13 +150,10 @@ function disable-spinners() {
 }
 export -f disable-spinners
 
-function enable-verbose() {
-  export SPINNERS_VERBOSE=true
-}
-
 function disable-verbose() {
   export SPINNERS_VERBOSE=false
 }
+export -f disable-verbose
 
 function configure-spinner-output() {
   export SPINNERS_OUTPUT=${1-}
@@ -175,3 +172,8 @@ function enable-spinners() {
   export SPINNERS_ENABLED=true
 }
 export -f enable-spinners
+
+function enable-verbose() {
+  export SPINNERS_VERBOSE=true
+}
+export -f enable-verbose

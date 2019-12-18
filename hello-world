@@ -41,10 +41,13 @@ mandatory count
 
 #------------------------------------------------------------------------------#
 
+# Approval?
 if ${approval_required} && ! confirm; then
   exit 0
 fi
 
+# Print.
+enable-verbose
 if [[ -n "${yaml+x}" ]]; then
   mandatory-command yq
   start-spinner "Printing entries from ${yaml}..."
@@ -60,6 +63,19 @@ else
   stop-spinner ${?}
 fi
 
+if [[ -n "${this+x}" ]]; then
+  printf 'this %s\n' "${this}"
+fi
+
+if [[ -n "${list+x}" ]]; then
+  printf 'list: ( '
+  for i in $(seq 0 $(( ${#list[@]} - 1 ))); do
+    printf '%s ' "${list[${i}]}"
+  done
+  printf ')\n'
+fi
+
+# Show off spinners.
 start-spinner 'Nested spinners disable the inner ones...'
 start-spinner 'This one...'
 start-spinner 'And this one...'
@@ -78,15 +94,3 @@ start-spinner 'Go crazy here!'
 start-spinner 'Even order doesn''t count.'
 start-spinner 'Spinners are off.'
 enable-spinners
-
-if [[ -n "${this+x}" ]]; then
-  printf 'this %s\n' "${this}"
-fi
-
-if [[ -n "${list+x}" ]]; then
-  printf 'list: ( '
-  for i in $(seq 0 $(( ${#list[@]} - 1 ))); do
-    printf '%s ' "${list[${i}]}"
-  done
-  printf ')\n'
-fi

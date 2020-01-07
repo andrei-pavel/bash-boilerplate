@@ -7,9 +7,6 @@
 [[ -n "${_LIB_UTILS_SOURCED+x}" ]] && return 0
 export _LIB_UTILS_SOURCED=true
 
-# Header
-. "$(dirname "${BASH_SOURCE[0]}")/header"
-
 function confirm() {
   # call with a prompt string or use a default
   read -r -p "${1:-Are you sure? [y/N]} " response

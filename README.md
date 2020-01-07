@@ -25,6 +25,8 @@ SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
 
 They all have import guards to make sure no library is imported twice.
 
+Make sure to import header first. It is a dependency to all other libraries.
+
 ### header
 
 * ☑ `set -euo pipefail`

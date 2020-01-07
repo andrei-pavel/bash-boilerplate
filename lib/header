@@ -31,7 +31,11 @@ Options:
 }
 
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+if [[ -z ${BASH_SOURCE+x} ]]; then
+  LIB_PATH="${SCRIPT_PATH}"
+else
+  LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+fi
 
 # Colors
 RESET='\e[1m\e[0m'

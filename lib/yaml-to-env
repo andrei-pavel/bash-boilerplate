@@ -4,9 +4,15 @@
 # Licensed under the MIT License
 
 # Header
-lib_script_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-. "${lib_script_path}/utils"
-. "${lib_script_path}/spinner"
+script_path="$(dirname "$(readlink -f "${0}")")"
+if [[ -z ${BASH_SOURCE+x} ]]; then
+  lib_path="${script_path}"
+else
+  lib_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+fi
+. "${lib_path}/header"
+. "${lib_path}/utils"
+. "${lib_path}/spinner"
 
 #------------------------------------------------------------------------------#
 
@@ -15,11 +21,11 @@ mandatory-command yq
 
 start-spinner 'Converting YAML to environment variables...'
 if yq 'walk(.)' <<< '{}' &> /dev/null; then
-  env="$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then .value == null // "\(.key)=(\((.value |@sh?)))" else . end) | .[]' < "${1-./config.yaml}")"
+  env="$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then .value == null // "\(.key)=(\((.value | @sh?)))" else . end) | .[]' < "${1-./config.yaml}")"
 else
   # Support for older versions of yq that don't have the walk() function
   # This makes it lack support for multiple levels of hierarchy in the YAML.
-  env="$(yq -r 'to_entries | map(select(.value != null) | "\(.key)=(\(.value))") | .[]' < "${1-./config.yaml}")"
+  env="$(yq -r 'to_entries | map(select(.value != null) | "\(.key)=(\(.value | @sh?))") | .[]' < "${1-./config.yaml}")"
 fi
 env="$(sed 's/^/export /g' <<< "${env}")"
 eval ${env}

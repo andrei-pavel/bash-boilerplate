@@ -9,7 +9,7 @@
 [[ -n "${_LIB_SPINNER_SOURCED+x}" ]] && return 0
 export _LIB_SPINNER_SOURCED=true
 
-. "$(dirname "${BASH_SOURCE[0]}")/traps"
+. "${LIB_PATH}/traps"
 
 function _spinner_cycle () {
   _cycle=(

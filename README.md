@@ -110,3 +110,9 @@ Arguments:
   [-y|--yaml $yaml]            specify path to the configuration file
   [$string]                    something other than "Hello, world!" to print
 ```
+
+## TODO
+
+☐ support for nested spinners
+☐ support for a second `-c config-yaml` in a child script
+    * workaround: call `. "${LIB_PATH}/yaml-to-env" config.yaml` before calling the child script

@@ -9,7 +9,7 @@ set -euo pipefail
 # Print usage function
 function print-usage() {
   local arguments=
-  if [[ -z "${ARGUMENTS+x}" ]]; then
+  if test -z "${ARGUMENTS+x}"; then
     ARGUMENTS="
 "
   else
@@ -31,7 +31,7 @@ Options:
 }
 
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-if [[ -z ${BASH_SOURCE+x} ]]; then
+if test -z "${BASH_SOURCE+x}"; then
   LIB_PATH="${SCRIPT_PATH}"
 else
   LIB_PATH="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
@@ -49,7 +49,7 @@ CYAN='\e[1m\e[36m'
 WHITE='\e[1m\e[37m'
 
 # Parse arguments.
-[[ -z ${_ADDITIONAL_ARGUMENTS+x} ]] && _ADDITIONAL_ARGUMENTS=
+test -z "${_ADDITIONAL_ARGUMENTS+x}" && _ADDITIONAL_ARGUMENTS=
 _yaml_files=()
 _i=1
 while (( _i <= ${#} )); do
@@ -94,22 +94,16 @@ export _LIB_HEADER_SOURCED=true
 for i in ${yaml_files[@]}; do
   . "${LIB_PATH}/yaml-to-env" "${i}"
 done
+unset yaml_files
 
+# Print -d and -h if they were given as arguments. Use this when running another
+# script inside your script to which you want to pass the same arguments that
+# were given to the parent script: ./script $(additional)
 function additional() {
   printf '%s' "${_ADDITIONAL_ARGUMENTS}"
 }
 
-# Export variables and functions
-export _ADDITIONAL_ARGUMENTS
-export -f additional
-export -f print-usage
-
-# Get script path and append it to PATH so other scripts are callable.
-export LIB_PATH
-export SCRIPT_PATH
-export PATH="${PATH}:${SCRIPT_PATH}"
-
-# Colors
+# Export colors.
 export RESET
 export BLACK
 export RED
@@ -119,3 +113,15 @@ export BLUE
 export PURPLE
 export CYAN
 export WHITE
+
+# Export variables and functions.
+export _ADDITIONAL_ARGUMENTS
+export -f additional
+export -f print-usage
+
+# Export paths.
+export LIB_PATH
+export SCRIPT_PATH
+
+# Get script path and append it to PATH so other scripts are callable.
+export PATH="${PATH}:${SCRIPT_PATH}"

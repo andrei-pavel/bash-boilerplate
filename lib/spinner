@@ -6,11 +6,12 @@
 # Warning! Nested spinners are not supported.
 
 # Source guard
-[[ -n "${_LIB_SPINNER_SOURCED+x}" ]] && return 0
+test -n "${_LIB_SPINNER_SOURCED+x}" && return 0
 export _LIB_SPINNER_SOURCED=true
 
 . "${LIB_PATH}/traps"
 
+# Print one cycle of spinning.
 function _spinner_cycle () {
   _cycle=(
     '[●   ]'
@@ -20,7 +21,7 @@ function _spinner_cycle () {
     '[  ● ]'
     '[ ●  ]'
   )
-  if [[ -z "${1+x}" ]]; then
+  if test -z "${1+x}"; then
     printf '%d' "${#_cycle[@]}"
   else
     printf '%s' "${_cycle[${1}]}"
@@ -29,6 +30,8 @@ function _spinner_cycle () {
 export -f _spinner_cycle
 export _spinner_period='0.15s'
 
+# Offer support for environments that don't have access to tput. tput is used to
+# hide and show the cursor.
 if command -v tput &> /dev/null; then
   if tput cvvis &> /dev/null; then
     function _tput() {
@@ -50,20 +53,22 @@ else
 fi
 export -f _tput
 
+# Display message alongside spinner or status text.
 function _display_message() {
   local mode=${1-}
   local status=${2-}
-  if [[ "${mode}" = 'spinning' ]]; then
+  if test "${mode}" = 'spinning'; then
     status="$(_spinner_cycle $(( _s % $(_spinner_cycle) )) )"
     (( ++_s ))
   fi
-  if [[ "${mode}" != 'first' ]]; then
+  if test "${mode}" != 'first'; then
     printf '\e[1A'
   fi
   printf "\\r%s%$(($(_tput cols)-${#_message}-8))s${status}\\n" "${_message}"
 }
 export -f _display_message
 
+# Start or stop spinner.
 function _spinner {
   case ${1-} in
     start)
@@ -76,7 +81,7 @@ function _spinner {
       ;;
 
     stop)
-      [[ -z "${_spinner_pid+x}" ]] && return 1
+      test -z "${_spinner_pid+x}" && return 1
       kill "${_spinner_pid}" > /dev/null 2>&1
       local status
       if (( ${2-0} == 0 )); then
@@ -95,18 +100,21 @@ function _spinner {
 }
 export -f _spinner
 
+# Check if spinners are enabled.
 function are-spinners-enabled() {
-  [[ -z "${SPINNERS_ENABLED+x}" || "${SPINNERS_ENABLED}" = true ]]
+  test -z "${SPINNERS_ENABLED+x}" || test "${SPINNERS_ENABLED}" = true
 }
 export -f are-spinners-enabled
 
+# Check if verbose is enabled.
 function is-verbose-enabled() {
-  [[ -n "${SPINNERS_VERBOSE+x}" && "${SPINNERS_VERBOSE}" = true ]]
+  test -n "${SPINNERS_VERBOSE+x}" && test "${SPINNERS_VERBOSE}" = true
 }
 export -f is-verbose-enabled
 
+# Start spinner.
 function start-spinner() {
-  if [[ "${-}" = *x* || -n "${_spinner_pid+x}" ]] || ! are-spinners-enabled; then
+  if test "${-}" = *x* || test -n "${_spinner_pid+x}" || test ! are-spinners-enabled; then
     return
   fi
   export _message="${1-}"
@@ -114,13 +122,13 @@ function start-spinner() {
   _spinner 'start' &
   _buffer="$(mktemp)"
   export _buffer
-  if [[ -z "${SPINNERS_OUTPUT+x}" || ${SPINNERS_OUTPUT} = 'full-output' ]]; then
+  if test -z "${SPINNERS_OUTPUT+x}" || test "${SPINNERS_OUTPUT}" = 'full-output'; then
     exec 3>&1 1>"${_buffer}" 2>&1
-  elif [[ ${SPINNERS_OUTPUT} = 'stdout-only' ]]; then
+  elif test "${SPINNERS_OUTPUT}" = 'stdout-only'; then
     exec 3>&1 1>"${_buffer}" 2>/dev/null
-  elif [[ ${SPINNERS_OUTPUT} = 'stderr-only' ]]; then
+  elif test "${SPINNERS_OUTPUT}" = 'stderr-only'; then
     exec 3>&1 1>/dev/null 2>"${_buffer}"
-  elif [[ ${SPINNERS_OUTPUT} = 'no-output' ]]; then
+  elif test "${SPINNERS_OUTPUT}" = 'no-output'; then
     exec 3>&1 1>/dev/null 2>/dev/null
   fi
   export _spinner_pid="${!}"
@@ -128,9 +136,10 @@ function start-spinner() {
 }
 export -f start-spinner
 
+# Stop spinner.
 function stop-spinner() {
   _tput cvvis
-  if [[ "${-}" = *x* || -z "${_spinner_pid+x}" ]] || ! are-spinners-enabled; then
+  if test "${-}" = *x* || test -z "${_spinner_pid+x}" || test ! are-spinners-enabled; then
     return
   fi
   exec 1>&3
@@ -144,35 +153,40 @@ function stop-spinner() {
 }
 export -f stop-spinner
 
+# Disable spinners.
 function disable-spinners() {
   traps "${the_trap}" --return-code-only
   export SPINNERS_ENABLED=false
 }
 export -f disable-spinners
 
+# Disable verbose.
 function disable-verbose() {
   export SPINNERS_VERBOSE=false
 }
 export -f disable-verbose
 
+# Configure spinner output to stdout, stderr, both or none.
 function configure-spinner-output() {
   export SPINNERS_OUTPUT=${1-}
-  if [[ ${SPINNERS_OUTPUT} != 'full-output' &&
-        ${SPINNERS_OUTPUT} != 'stdout-only' &&
-        ${SPINNERS_OUTPUT} != 'stderr-only' &&
-        ${SPINNERS_OUTPUT} != 'no-output' ]]; then
+  if test "${SPINNERS_OUTPUT}" != 'full-output' &&
+     test "${SPINNERS_OUTPUT}" != 'stdout-only' &&
+     test "${SPINNERS_OUTPUT}" != 'stderr-only' &&
+     test "${SPINNERS_OUTPUT}" != 'no-output'; then
     printf 'wrong spinner output %s\n' "${mode}" 2>/dev/null
     return 1
   fi
 }
 export -f configure-spinner-output
 
+# Enable spinners.
 function enable-spinners() {
   traps "${the_trap}"
   export SPINNERS_ENABLED=true
 }
 export -f enable-spinners
 
+# Enable verbose.
 function enable-verbose() {
   export SPINNERS_VERBOSE=true
 }

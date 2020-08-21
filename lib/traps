@@ -4,7 +4,7 @@
 # Licensed under the MIT License
 
 # Source guard
-[[ -n "${_LIB_TRAPS_SOURCED+x}" ]] && return 0
+test -n "${_LIB_TRAPS_SOURCED+x}" && return 0
 export _LIB_TRAPS_SOURCED=true
 
 # Traps
@@ -13,18 +13,18 @@ function traps() {
   the_trap=${1-}
   local force=${2-}
   for t in HUP INT QUIT KILL TERM EXIT; do
-    if [[ ${force} = '--force' ]]; then
+    if test "${force}" = '--force'; then
       trap "
         ${the_trap}
-      " ${t}
-    elif [[ ${force} = '--return-code-only' ]]; then
+      " "${t}"
+    elif test "${force}" = '--return-code-only'; then
       trap "
         return_code=\${?}
         trap - EXIT
         ${the_trap}
         printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
         exit \${return_code}
-      " ${t}
+      " "${t}"
     else
       trap "
         return_code=\${?}
@@ -33,7 +33,7 @@ function traps() {
         ${the_trap}
         printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
         exit \${return_code}
-      " ${t}
+      " "${t}"
     fi
   done
 }

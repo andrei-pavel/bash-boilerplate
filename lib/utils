@@ -4,11 +4,11 @@
 # Licensed under the MIT License
 
 # Source guard
-[[ -n "${_LIB_UTILS_SOURCED+x}" ]] && return 0
+test -n "${_LIB_UTILS_SOURCED+x}" && return 0
 export _LIB_UTILS_SOURCED=true
 
+# Ask user if script should continue or not.
 function confirm() {
-  # call with a prompt string or use a default
   read -r -p "${1:-Are you sure? [y/N]} " response
   case "$response" in
     [yY][eE][sS]|[yY])
@@ -21,9 +21,10 @@ function confirm() {
 }
 export -f confirm
 
+# Test if environment variable given as parameter is set.
 function mandatory() {
   while (( ${#} > 0 )); do
-    if [[ -z "${!1+x}" ]]; then
+    if test -z "${!1+x}"; then
       printf "${RED}%s${RESET} argument is mandatory.\\n" "${1}" >&2
       print-usage
       exit 2
@@ -33,6 +34,7 @@ function mandatory() {
 }
 export -f mandatory
 
+# Test if command given as parameter exists.
 function mandatory-command() {
   while (( ${#} > 0 )); do
     if ! command -v "${1}" &> /dev/null; then

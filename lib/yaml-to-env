@@ -5,7 +5,7 @@
 
 # Header
 script_path="$(dirname "$(readlink -f "${0}")")"
-if [[ -z ${BASH_SOURCE+x} ]]; then
+if test -z "${BASH_SOURCE+x}"; then
   lib_path="${script_path}"
 else
   lib_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"

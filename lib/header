@@ -49,58 +49,142 @@ CYAN='\e[1m\e[36m'
 WHITE='\e[1m\e[37m'
 
 # Parse arguments.
-test -z "${_ADDITIONAL_ARGUMENTS+x}" && _ADDITIONAL_ARGUMENTS=
-_yaml_files=()
-_i=1
-while (( _i <= ${#} )); do
-  case "${!_i}" in
-  # [-c|--config $config_yaml]   Reads from a YAML configuration and converts all
-  #                              key-value pairs with literal values to
-  #                              environment variables.
-  '-c'|'--config')
-    _ii=$((_i + 1))
-    if (( _ii > ${#} )); then
-      printf "${RED}ERROR: YAML configuration file not provided for -c|--config option${RESET}\\n" >&2
-      exit 1
-    fi
-    yaml=${!_ii}
-    set -- ${*:1:$((_i - 1))} ${*:$((_i + 2))}
-    yaml_files+=("${yaml}")
-    _i=$(( _i - 1))
-    ;;
-  # [-d|--debug]                 Enables debug mode, showing every executed
-  #                              statement.
-  '-d'|'--debug')
-    set -x
-    set -- ${*:1:$((_i - 1))} ${*:$((_i + 1))}
-    _i=$(( _i - 1))
-    _ADDITIONAL_ARGUMENTS+=" -d"
-    ;;
-  # [-h|--help]                  Prints usage (this text).
-  '-h'|'--help')
-    _ADDITIONAL_ARGUMENTS+=" -h"
-    print-usage
-    exit 0
-    ;;
-  esac;
-  _i=$(( _i + 1 ))
-done
-
 # Source guard
 [[ -n "${_LIB_HEADER_SOURCED+x}" ]] && return 0
 export _LIB_HEADER_SOURCED=true
 
 # Source YAML files.
-for i in ${yaml_files[@]}; do
+for i in ${_yaml_files[@]}; do
   . "${LIB_PATH}/yaml-to-env" "${i}"
 done
-unset yaml_files
+unset _yaml_files
 
 # Print -d and -h if they were given as arguments. Use this when running another
 # script inside your script to which you want to pass the same arguments that
 # were given to the parent script: ./script $(additional)
 function additional() {
   printf '%s' "${_ADDITIONAL_ARGUMENTS}"
+}
+
+# Define an argument.
+function argument() {
+  test -z "${_simple_argument_variables+x}" && export _simple_argument_variables=''
+  test -z "${_simple_argument_parameters+x}" && export _simple_argument_parameters=''
+  test -z "${_simple_argument_descriptions+x}" && export _simple_argument_descriptions=''
+  test -z "${_valued_argument_variables+x}" && export _valued_argument_variables=''
+  test -z "${_valued_argument_parameters+x}" && export _valued_argument_parameters=''
+  test -z "${_valued_argument_descriptions+x}" && export _valued_argument_descriptions=''
+  test -z "${_positional_argument_variables+x}" && export _positional_argument_variables=''
+  test -z "${_positional_argument_descriptions+x}" && export _positional_argument_descriptions=''
+
+  local mode=${1}
+  local variable=${2}
+  local parameter_or_description=${3}
+  local description=${4-}
+  case "${mode}" in
+    'simple')
+      printf -v _simple_argument_variables '%s%s\n' "${_simple_argument_variables}" "${variable}"
+      printf -v _simple_argument_parameters '%s%s\n' "${_simple_argument_parameters}" "${parameter_or_description}"
+      printf -v _simple_argument_descriptions '%s%s\n' "${_simple_argument_descriptions}" "${description}"
+      export ${variable}=false
+      printf -v ARGUMENTS '%s  [%s]        %s\n' "${ARGUMENTS-}" "${parameter_or_description}" "${description}"
+      ;;
+    'valued')
+      printf -v _valued_argument_variables '%s%s\n' "${_valued_argument_variables}" "${variable}"
+      printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "${parameter_or_description}"
+      printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
+      printf -v ARGUMENTS '%s  [%s %s]        %s\n' "${ARGUMENTS-}" "${parameter_or_description}" "${variable}" "${description}"
+      ;;
+    'positional')
+      printf -v _positional_argument_variables '%s%s\n' "${_positional_argument_variables}" "${variable}"
+      printf -v _positional_argument_descriptions '%s%s\n' "${_positional_argument_descriptions}" "${parameter_or_description}"
+      printf -v ARGUMENTS '%s  [%s]        %s\n' "${ARGUMENTS-}" "${variable}" "${parameter_or_description}"
+      ;;
+    *)
+      printf "${RED}ERROR: unsupported argument mode '${mode}', expected simple, valued or positional${RESET}\\n" >&2
+      exit 1
+      ;;
+  esac
+}
+
+# Parse parameters according to defined arguments.
+function parse-parameters() {
+  local _yaml
+
+  # Options
+  test -z "${_ADDITIONAL_ARGUMENTS+x}" && _ADDITIONAL_ARGUMENTS=
+  _yaml_files=()
+  _i=1
+  while (( _i <= ${#} )); do
+    case "${!_i}" in
+    # [-c|--config $config_yaml]   Reads from a YAML configuration and converts all
+    #                              key-value pairs with literal values to
+    #                              environment variables.
+    '-c'|'--config')
+      _ii=$((_i + 1))
+      if (( _ii > ${#} )); then
+        printf "${RED}ERROR: YAML configuration file not provided for -c|--config option${RESET}\\n" >&2
+        exit 1
+      fi
+      _yaml=${!_ii}
+      set -- ${*:1:$((_i - 1))} ${*:$((_i + 2))}
+      _yaml_files+=("${_yaml}")
+      _i=$(( _i - 1))
+      ;;
+    # [-d|--debug]                 Enables debug mode, showing every executed
+    #                              statement.
+    '-d'|'--debug')
+      set -x
+      set -- ${*:1:$((_i - 1))} ${*:$((_i + 1))}
+      _i=$(( _i - 1))
+      _ADDITIONAL_ARGUMENTS+=" -d"
+      ;;
+    # [-h|--help]                  Prints usage (this text).
+    '-h'|'--help')
+      _ADDITIONAL_ARGUMENTS+=" -h"
+      print-usage
+      exit 0
+      ;;
+    esac;
+    _i=$(( _i + 1 ))
+  done
+
+  local _positional
+  local _variable
+
+  # Arguments
+  while (( ${#} > 0 )); do
+    for i in $(seq 1 $(printf '%s' "${_simple_argument_variables}" | wc -l)); do
+      case "${1}" in $(printf '%s' "${_simple_argument_parameters}" | head -n "${i}" | tail -n 1))
+        _variable=$(printf '%s' "${_simple_argument_variables}" | head -n "${i}" | tail -n 1)
+        export ${_variable}=true
+        shift
+        continue 2
+      ;; esac
+    done
+    for i in $(seq 1 $(printf '%s' "${_valued_argument_variables}" | wc -l)); do
+      case "${1}" in $(printf '%s' "${_valued_argument_parameters}" | head -n "${i}" | tail -n 1))
+        shift
+        _variable=$(printf '%s' "${_valued_argument_variables}" | head -n "${i}" | tail -n 1)
+        export ${_variable}=${1}
+        shift
+        continue 2
+      ;; esac
+    done
+    for i in $(seq 1 $(printf '%s' "${_positional_argument_variables}" | wc -l)); do
+      _positional=$(printf '%s' "${_positional_argument_variables}" | head -n "${i}" | tail -n 1)
+      if test -z "${!_positional+x}"; then
+        export "${_positional}"="${1}"
+        shift
+        continue 2
+      fi
+    done
+
+    # Unrecognized argument
+    printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2
+    print-usage
+    exit 1
+  done
 }
 
 # Export colors.

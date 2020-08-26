@@ -40,6 +40,8 @@ Make sure to import header first. It is a dependency to all other libraries.
 * ☑ ANSII colors `${BLACK}`, `${RED}`, `${GREEN}`, `${YELLOW}`, `${BLUE}`,
     `${PURPLE}`, `${CYAN}`, `${WHITE}` are exported
 * ☑ `${SCRIPT_PATH}`, `${LIB_PATH}` paths are exported
+* ☑ `argument` to define your argument and how it should be parsed
+* ☑ `parse-parameters` to parse the actual parameters
 
 
 ### spinner
@@ -88,12 +90,13 @@ The best bash spinner out there
 will read `${config_yaml}` or `./config.yaml` if it is not provided and will
 convert all YAML variables to shell variables just like
 `-c|--config $config_yaml`, but programatically instead of user-requested.
+* ☐ support for a second `-c config-yaml` in a child script
+    * workaround: call `. "${LIB_PATH}/yaml-to-env" config.yaml` before calling the child script
 
 
 ## Example
 
-See the `hello-world` example which showcases the different uses of these
-arguments.
+See the `hello-world` example which showcases how these features should be used.
 
 ```bash
 Usage: hello-world {{options}} {{arguments}}
@@ -110,9 +113,3 @@ Arguments:
   [-y|--yaml $yaml]            specify path to the configuration file
   [$string]                    something other than "Hello, world!" to print
 ```
-
-## TODO
-
-☐ support for nested spinners
-☐ support for a second `-c config-yaml` in a child script
-    * workaround: call `. "${LIB_PATH}/yaml-to-env" config.yaml` before calling the child script

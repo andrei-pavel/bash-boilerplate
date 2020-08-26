@@ -4,34 +4,18 @@
 # Licensed under the MIT License
 
 # Header
-ARGUMENTS="\
-  [-a|--approval]              whether to ask user for approval
-  -n \$count                    print \$count times
-  [-y|--yaml \$yaml]            specify path to the configuration file
-  [\$string]                    something other than \"Hello, world!\" to print
-"
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
 . "${SCRIPT_PATH}/lib/header"
 . "${SCRIPT_PATH}/lib/utils"
 . "${SCRIPT_PATH}/lib/spinner"
 . "${SCRIPT_PATH}/lib/traps"
 
-# Parse arguments.
-while (( ${#} > 0 )); do
-  case "${1}" in
-  # [-a|--approval]              whether to ask user for approval
-  '-a'|'--approval') approval_required=true ;;
-  # -n \$count                    print \$count times
-  '-n') shift && count=${1} ;;
-  # [-y|--yaml]                specify path to the configuration file
-  '-y'|'--yaml') shift && yaml=${1} ;;
-  *)
-    # [\$string]                    something other than \"Hello, world!\" to print
-    [[ -z "${string+x}" ]] && string="${1}" && shift && continue
-    # Unrecognized argument
-    printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; print-usage; exit 1 ;;
-  esac; shift
-done
+argument 'simple' 'approval_required' '-a|--approval' 'whether to ask user for approval'
+argument 'valued' 'count' '-n' 'print $count times'
+argument 'valued' 'yaml' '-y' 'specify path to the configuration file'
+argument 'positional' 'string' 'something other than "Hello, world!" to print'
+
+parse-parameters "${@}"
 
 mandatory count
 

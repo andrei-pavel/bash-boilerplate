@@ -86,19 +86,21 @@ function argument() {
       printf -v _simple_argument_variables '%s%s\n' "${_simple_argument_variables}" "${variable}"
       printf -v _simple_argument_parameters '%s%s\n' "${_simple_argument_parameters}" "${parameter_or_description}"
       printf -v _simple_argument_descriptions '%s%s\n' "${_simple_argument_descriptions}" "${description}"
-      export ${variable}=false
       printf -v ARGUMENTS '%s  [%s]        %s\n' "${ARGUMENTS-}" "${parameter_or_description}" "${description}"
+      unset "${variable}"
       ;;
     'valued')
       printf -v _valued_argument_variables '%s%s\n' "${_valued_argument_variables}" "${variable}"
       printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "${parameter_or_description}"
       printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
       printf -v ARGUMENTS '%s  [%s %s]        %s\n' "${ARGUMENTS-}" "${parameter_or_description}" "${variable}" "${description}"
+      unset "${variable}"
       ;;
     'positional')
       printf -v _positional_argument_variables '%s%s\n' "${_positional_argument_variables}" "${variable}"
       printf -v _positional_argument_descriptions '%s%s\n' "${_positional_argument_descriptions}" "${parameter_or_description}"
       printf -v ARGUMENTS '%s  [%s]        %s\n' "${ARGUMENTS-}" "${variable}" "${parameter_or_description}"
+      unset "${variable}"
       ;;
     *)
       printf "${RED}ERROR: unsupported argument mode '${mode}', expected simple, valued or positional${RESET}\\n" >&2

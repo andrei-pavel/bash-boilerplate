@@ -63,7 +63,7 @@ unset _yaml_files
 # script inside your script to which you want to pass the same arguments that
 # were given to the parent script: ./script $(additional)
 function additional() {
-  printf '%s' "${_ADDITIONAL_ARGUMENTS}"
+  printf '%s' "${_ADDITIONAL_ARGUMENTS-}"
 }
 
 # Define an argument.

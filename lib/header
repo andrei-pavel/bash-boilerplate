@@ -139,11 +139,15 @@ function parse-parameters() {
       set -x
       set -- ${*:1:$((_i - 1))} ${*:$((_i + 1))}
       _i=$(( _i - 1))
-      _ADDITIONAL_ARGUMENTS+=" -d"
+      if ! grep ' \-d' <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
+        _ADDITIONAL_ARGUMENTS+=' -d'
+      fi
       ;;
     # [-h|--help]                  Prints usage (this text).
     '-h'|'--help')
-      _ADDITIONAL_ARGUMENTS+=" -h"
+      if ! grep ' \-d' <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
+        _ADDITIONAL_ARGUMENTS+=' -d'
+      fi
       print-usage
       exit 0
       ;;

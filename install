@@ -1,31 +1,16 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2018 Andrei Pavel, andrei.pavel@cti.pub.ro
+# Copyright (C) 2017-2020 Andrei Pavel, andrei.pavel@cti.pub.ro
 # Licensed under the MIT License
 
 # Get script path and append it to PATH so other scripts are callable.
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-PATH="${PATH}:${SCRIPT_PATH}"
 
 # Header
-ARGUMENTS="\
-  [-c|--confirm]               whether to ask user for confirmation
-  -n \$count                    print \$count times
-  [\$string]                    something other than \"Hello, world!\" to print
-"
 . "${SCRIPT_PATH}/lib/header"
-. "${SCRIPT_PATH}/lib/utils"
 . "${SCRIPT_PATH}/lib/spinner"
-. "${SCRIPT_PATH}/lib/traps"
 
-# Parse arguments.
-confirm_required=false
-while (( ${#} > 0 )); do
-  case "${1}" in
-  # Unrecognized argument
-  *) printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2; print-usage; exit 1 ;;
-  esac; shift
-done
+parse-parameters "${@}"
 
 #------------------------------------------------------------------------------#
 

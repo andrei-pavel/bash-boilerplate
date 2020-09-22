@@ -20,8 +20,8 @@ parse-parameters "${@}"
 mandatory count
 
 # Default arguments
-[[ -z "${approval_required+x}" ]] && approval_required=false
-[[ -z "${string+x}" ]] && string="Hello, world!"
+test -z "${approval_required+x}" && approval_required=false
+test -z "${string+x}" && string="Hello, world!"
 
 #------------------------------------------------------------------------------#
 
@@ -32,7 +32,7 @@ fi
 
 # Print.
 enable-verbose
-if [[ -n "${yaml+x}" ]]; then
+if test -n "${yaml+x}"; then
   mandatory-command yq
   start-spinner "Printing entries from ${yaml}..."
   for (( i = 0; i < count; ++i )); do
@@ -47,11 +47,11 @@ else
   stop-spinner ${?}
 fi
 
-if [[ -n "${this+x}" ]]; then
+if test -n "${this+x}"; then
   printf 'this %s\n' "${this}"
 fi
 
-if [[ -n "${list+x}" ]]; then
+if test -n "${list+x}"; then
   printf 'list: ( '
   for i in $(seq 0 $(( ${#list[@]} - 1 ))); do
     printf '%s ' "${list[${i}]}"

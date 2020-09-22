@@ -50,7 +50,7 @@ WHITE='\e[1m\e[37m'
 
 # Parse arguments.
 # Source guard
-[[ -n "${_LIB_HEADER_SOURCED+x}" ]] && return 0
+test -n "${_LIB_HEADER_SOURCED+x}" && return 0
 export _LIB_HEADER_SOURCED=true
 
 # Source YAML files.
@@ -81,25 +81,29 @@ function argument() {
   local variable=${2}
   local parameter_or_description=${3}
   local description=${4-}
+  local length
   case "${mode}" in
     'simple')
       printf -v _simple_argument_variables '%s%s\n' "${_simple_argument_variables}" "${variable}"
       printf -v _simple_argument_parameters '%s%s\n' "${_simple_argument_parameters}" "${parameter_or_description}"
       printf -v _simple_argument_descriptions '%s%s\n' "${_simple_argument_descriptions}" "${description}"
-      printf -v ARGUMENTS '%s  [%s]        %s\n' "${ARGUMENTS-}" "${parameter_or_description}" "${description}"
+      length=$(( ${#description} + 26 - ${#parameter_or_description} )) # 26 = 32 - 5 - 1
+      printf -v ARGUMENTS "%s  [%s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "${description}"
       unset "${variable}"
       ;;
     'valued')
       printf -v _valued_argument_variables '%s%s\n' "${_valued_argument_variables}" "${variable}"
       printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "${parameter_or_description}"
       printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
-      printf -v ARGUMENTS '%s  [%s %s]        %s\n' "${ARGUMENTS-}" "${parameter_or_description}" "${variable}" "${description}"
+      length=$(( ${#description} + 25 - ${#parameter_or_description} - ${#variable} )) # 25 = 32 - 6 - 1
+      printf -v ARGUMENTS "%s  [%s %s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "${variable}" "${description}"
       unset "${variable}"
       ;;
     'positional')
       printf -v _positional_argument_variables '%s%s\n' "${_positional_argument_variables}" "${variable}"
       printf -v _positional_argument_descriptions '%s%s\n' "${_positional_argument_descriptions}" "${parameter_or_description}"
-      printf -v ARGUMENTS '%s  [%s]        %s\n' "${ARGUMENTS-}" "${variable}" "${parameter_or_description}"
+      length=$(( ${#parameter_or_description} + 26 - ${#variable} )) # 26 = 32 - 5 - 1
+      printf -v ARGUMENTS "%s  [%s] %${length}s\\n" "${ARGUMENTS-}" "${variable}" "${parameter_or_description}"
       unset "${variable}"
       ;;
     *)

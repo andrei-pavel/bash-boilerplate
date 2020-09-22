@@ -6,6 +6,10 @@
 # Fail script if any command fails.
 set -euo pipefail
 
+# Extended globbing is required for pattern matching in arguments with multiple
+# patterns.
+shopt -s extglob
+
 # Print usage function
 function print-usage() {
   local arguments=
@@ -85,7 +89,7 @@ function argument() {
   case "${mode}" in
     'simple')
       printf -v _simple_argument_variables '%s%s\n' "${_simple_argument_variables}" "${variable}"
-      printf -v _simple_argument_parameters '%s%s\n' "${_simple_argument_parameters}" "${parameter_or_description}"
+      printf -v _simple_argument_parameters '%s%s\n' "${_simple_argument_parameters}" "@(${parameter_or_description})"
       printf -v _simple_argument_descriptions '%s%s\n' "${_simple_argument_descriptions}" "${description}"
       length=$(( ${#description} + 26 - ${#parameter_or_description} )) # 26 = 32 - 5 - 1
       printf -v ARGUMENTS "%s  [%s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "${description}"

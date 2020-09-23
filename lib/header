@@ -72,15 +72,6 @@ function additional() {
 
 # Define an argument.
 function argument() {
-  test -z "${_simple_argument_variables+x}" && export _simple_argument_variables=''
-  test -z "${_simple_argument_parameters+x}" && export _simple_argument_parameters=''
-  test -z "${_simple_argument_descriptions+x}" && export _simple_argument_descriptions=''
-  test -z "${_valued_argument_variables+x}" && export _valued_argument_variables=''
-  test -z "${_valued_argument_parameters+x}" && export _valued_argument_parameters=''
-  test -z "${_valued_argument_descriptions+x}" && export _valued_argument_descriptions=''
-  test -z "${_positional_argument_variables+x}" && export _positional_argument_variables=''
-  test -z "${_positional_argument_descriptions+x}" && export _positional_argument_descriptions=''
-
   local mode=${1}
   local variable=${2}
   local parameter_or_description=${3}
@@ -218,6 +209,16 @@ export -f additional
 export -f argument
 export -f parse-parameters
 export -f print-usage
+
+# Export variables responsible for argument defining & parameter parsing.
+test -z "${_simple_argument_variables+x}" && export _simple_argument_variables=''
+test -z "${_simple_argument_parameters+x}" && export _simple_argument_parameters=''
+test -z "${_simple_argument_descriptions+x}" && export _simple_argument_descriptions=''
+test -z "${_valued_argument_variables+x}" && export _valued_argument_variables=''
+test -z "${_valued_argument_parameters+x}" && export _valued_argument_parameters=''
+test -z "${_valued_argument_descriptions+x}" && export _valued_argument_descriptions=''
+test -z "${_positional_argument_variables+x}" && export _positional_argument_variables=''
+test -z "${_positional_argument_descriptions+x}" && export _positional_argument_descriptions=''
 
 # Export paths.
 export LIB_PATH

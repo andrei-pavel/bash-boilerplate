@@ -19,7 +19,7 @@ parse-parameters "${@}"
 
 mandatory count
 
-# Default arguments
+# Default parameters
 test -z "${approval_required+x}" && approval_required=false
 test -z "${string+x}" && string="Hello, world!"
 

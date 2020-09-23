@@ -215,6 +215,8 @@ export WHITE
 # Export variables and functions.
 export _ADDITIONAL_ARGUMENTS
 export -f additional
+export -f argument
+export -f parse-parameters
 export -f print-usage
 
 # Export paths.

@@ -57,12 +57,6 @@ WHITE='\e[1m\e[37m'
 test -n "${_LIB_HEADER_SOURCED+x}" && return 0
 export _LIB_HEADER_SOURCED=true
 
-# Source YAML files.
-for i in ${_yaml_files[@]}; do
-  . "${LIB_PATH}/yaml-to-env" "${i}"
-done
-unset _yaml_files
-
 # Print -d and -h if they were given as arguments. Use this when running another
 # script inside your script to which you want to pass the same arguments that
 # were given to the parent script: ./script $(additional)
@@ -153,6 +147,12 @@ function parse-parameters() {
     esac;
     _i=$(( _i + 1 ))
   done
+
+  # Source YAML files.
+  for i in ${_yaml_files[@]}; do
+    . "${LIB_PATH}/yaml-to-env" "${i}"
+  done
+  unset _yaml_files
 
   local _positional
   local _variable

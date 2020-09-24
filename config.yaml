@@ -1,6 +1,6 @@
+this: works!
 data:
-  this: works!
-this: also works!
+  this: also works!
 list:
   - element1
   - element2

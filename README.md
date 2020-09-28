@@ -44,6 +44,7 @@ Make sure to import header first. It is a dependency to all other libraries.
 * ☑ `allow-extra-parameters` to allow more parameters than defined to be used
     directly in the script
 * ☑ `parse-parameters` to parse the actual parameters
+* ☐ support multiple-word extra parameters
 
 
 ### spinner
@@ -60,7 +61,7 @@ The best bash spinner out there
 * ☑ `enable-verbose` function to print output on stopped spinner all the time
 * ☑ `configure-spinner-output [full-output|stdout-only|stderr-only|no-output]`
     function
-* ☐ nested spinners
+* ☐ support nested spinners
 
 
 ### traps

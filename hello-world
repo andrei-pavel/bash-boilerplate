@@ -16,6 +16,7 @@ argument 'valued' 'yaml' '-y' 'specify path to the configuration file'
 argument 'positional' 'string' 'something other than "Hello, world!" to print'
 
 parse-parameters "${@}"
+set -- "${EXTRA_PARAMETERS}"
 
 mandatory count
 

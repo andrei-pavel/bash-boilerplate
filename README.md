@@ -34,7 +34,8 @@ Make sure to import header first. It is a dependency to all other libraries.
 * ☑ default parameters `-c|--config $config_yaml` reads the given YAML file and
     converts all YAML variables to shell variables
 * ☑ default parameters `-d|--debug` calls `set -x` for debug mode
-* ☑ default parameters `-h|--help` calls `print-usage()` automatically
+* ☑ default parameters `-h|--help` calls `print-usage` automatically
+* ☑ `add-to-usage` to add a custom message to the usage text
 * ☑ `additional` function to print all given arguments other than the default
     ones above
 * ☑ ANSII colors `${BLACK}`, `${RED}`, `${GREEN}`, `${YELLOW}`, `${BLUE}`,

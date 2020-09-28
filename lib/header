@@ -30,8 +30,8 @@ Options:
                                environment variables.
   [-d|--debug]                 Enables debug mode, showing every executed
                                statement.
-  [-h|--help]                  Prints usage (this text).%s' \
-    "$(basename "${0}")" "${arguments}" "${ARGUMENTS}"
+  [-h|--help]                  Prints usage (this text).%s%s' \
+    "$(basename "${0}")" "${arguments}" "${ARGUMENTS}" "${_add_to_usage-}"
 }
 
 SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
@@ -186,7 +186,7 @@ function parse-parameters() {
     done
 
     # Allow extra parameters?
-    if ${_ALLOW_EXTRA_PARAMETERS-false}; then
+    if ${_allow_extra_parameters-false}; then
       break
     fi
 
@@ -200,7 +200,12 @@ function parse-parameters() {
 }
 
 function allow-extra-parameters() {
-  export _ALLOW_EXTRA_PARAMETERS=true
+  export _allow_extra_parameters=true
+}
+
+function add-to-usage() {
+  test -z "${_add_to_usage+x}" && export _add_to_usage=''
+  printf -v _add_to_usage '%s%s\n' "${_add_to_usage}" "${1}"
 }
 
 # Export colors.

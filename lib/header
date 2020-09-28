@@ -85,7 +85,7 @@ function argument() {
       printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "${parameter_or_description}"
       printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
       length=$(( ${#description} + 25 - ${#parameter_or_description} - ${#variable} )) # 25 = 32 - 6 - 1
-      printf -v ARGUMENTS "%s  [%s %s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "${variable}" "${description}"
+      printf -v ARGUMENTS "%s  [%s %s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "\$${variable}" "${description}"
       unset "${variable}"
       ;;
     'positional')

@@ -93,7 +93,7 @@ function _spinner {
       ;;
 
     *)
-      printf 'ERROR: invalid argument, try {start/stop}' >&2
+      printf 'ERROR: invalid parameter, try {start/stop}' >&2
       exit 2
       ;;
   esac

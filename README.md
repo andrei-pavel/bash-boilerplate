@@ -41,6 +41,8 @@ Make sure to import header first. It is a dependency to all other libraries.
     `${PURPLE}`, `${CYAN}`, `${WHITE}` are exported
 * ☑ `${SCRIPT_PATH}`, `${LIB_PATH}` paths are exported
 * ☑ `argument` to define your argument and how it should be parsed
+* ☑ `allow-extra-parameters` to allow more parameters than defined to be used
+    directly in the script
 * ☑ `parse-parameters` to parse the actual parameters
 
 

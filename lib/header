@@ -6,7 +6,7 @@
 # Fail script if any command fails.
 set -euo pipefail
 
-# Extended globbing is required for pattern matching in arguments with multiple
+# Extended globbing is required for pattern matching in parameters with multiple
 # patterns.
 shopt -s extglob
 
@@ -185,11 +185,20 @@ function parse-parameters() {
       fi
     done
 
-    # Unrecognized argument
-    printf "${RED}ERROR: Unrecognized argument '%s'${RESET}\\n" "${1}" 1>&2
+    # Allow extra parameters?
+    if ${_ALLOW_EXTRA_PARAMETERS-false}; then
+      break
+    fi
+
+    # Unrecognized parameter
+    printf "${RED}ERROR: Unrecognized parameter '%s'${RESET}\\n" "${1}" 1>&2
     print-usage
     exit 1
   done
+}
+
+function allow-extra-parameters() {
+  export _ALLOW_EXTRA_PARAMETERS=true
 }
 
 # Export colors.
@@ -206,6 +215,7 @@ export WHITE
 # Export variables and functions.
 export _ADDITIONAL_ARGUMENTS
 export -f additional
+export -f allow-extra-parameters
 export -f argument
 export -f parse-parameters
 export -f print-usage

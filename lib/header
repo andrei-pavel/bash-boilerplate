@@ -82,7 +82,7 @@ function argument() {
       ;;
     'valued')
       printf -v _valued_argument_variables '%s%s\n' "${_valued_argument_variables}" "${variable}"
-      printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "${parameter_or_description}"
+      printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "@(${parameter_or_description})"
       printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
       length=$(( ${#description} + 25 - ${#parameter_or_description} - ${#variable} )) # 25 = 32 - 6 - 1
       printf -v ARGUMENTS "%s  [%s %s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "\$${variable}" "${description}"
@@ -171,7 +171,7 @@ function parse-parameters() {
       case "${1}" in $(printf '%s' "${_valued_argument_parameters}" | head -n "${i}" | tail -n 1))
         shift
         _variable=$(printf '%s' "${_valued_argument_variables}" | head -n "${i}" | tail -n 1)
-        export ${_variable}=${1}
+        export ${_variable}="${1}"
         shift
         continue 2
       ;; esac

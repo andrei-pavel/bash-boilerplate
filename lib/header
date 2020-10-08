@@ -122,7 +122,7 @@ function parse-parameters() {
         exit 1
       fi
       _yaml=${!_ii}
-      set -- ${*:1:$((_i - 1))} ${*:$((_i + 2))}
+      set -- "${@:1:$((_i - 1))}" "${@:$((_i + 2))}"
       _yaml_files+=("${_yaml}")
       _i=$(( _i - 1))
       ;;
@@ -130,7 +130,7 @@ function parse-parameters() {
     #                              statement.
     '-d'|'--debug')
       set -x
-      set -- ${*:1:$((_i - 1))} ${*:$((_i + 1))}
+      set -- "${@:1:$((_i - 1))}" "${@:$((_i + 1))}"
       _i=$(( _i - 1))
       if ! grep ' \-d' <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
         _ADDITIONAL_ARGUMENTS+=' -d'
@@ -149,7 +149,7 @@ function parse-parameters() {
   done
 
   # Source YAML files.
-  for i in ${_yaml_files[@]}; do
+  for i in "${_yaml_files[@]}"; do
     . "${LIB_PATH}/yaml-to-env" "${i}"
   done
   unset _yaml_files

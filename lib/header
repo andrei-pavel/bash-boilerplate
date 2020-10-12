@@ -196,7 +196,7 @@ function parse-parameters() {
     exit 1
   done
 
-  export EXTRA_PARAMETERS="${@}"
+  EXTRA_PARAMETERS=( "${@}" )
 }
 
 function allow-extra-parameters() {

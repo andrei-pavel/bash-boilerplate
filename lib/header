@@ -25,12 +25,12 @@ ${ARGUMENTS}"
   printf \
 'Usage: %s {{options}} %s
 Options:
-  [-c|--config $config_yaml]   Reads from a YAML configuration and converts all
-                               key-value pairs with literal values to
-                               environment variables.
-  [-d|--debug]                 Enables debug mode, showing every executed
-                               statement.
-  [-h|--help]                  Prints usage (this text).%s%s' \
+  [-c|--config $config_yaml]                                   Reads from a YAML configuration and converts all
+                                                               key-value pairs with literal values to
+                                                               environment variables.
+  [-d|--debug]                                                 Enables debug mode, showing every executed
+                                                               statement.
+  [-h|--help]                                                  Prints usage (this text).%s%s' \
     "$(basename "${0}")" "${arguments}" "${ARGUMENTS}" "${_add_to_usage-}"
 }
 
@@ -59,8 +59,15 @@ export _LIB_HEADER_SOURCED=true
 
 # Print -d and -h if they were given as arguments. Use this when running another
 # script inside your script to which you want to pass the same arguments that
-# were given to the parent script: ./script $(additional)
-function additional() {
+# were given to the parent script: ./script $(additional-options)
+function additional-options() {
+  printf '%s' "${_ADDITIONAL_OPTIONS-}"
+}
+
+# Print any given arguments other than default options. Use this when running
+# another script inside your script to which you want to pass the same arguments
+# that were given to the parent script: ./script $(additional-options)
+function additional-arguments() {
   printf '%s' "${_ADDITIONAL_ARGUMENTS-}"
 }
 
@@ -76,7 +83,7 @@ function argument() {
       printf -v _simple_argument_variables '%s%s\n' "${_simple_argument_variables}" "${variable}"
       printf -v _simple_argument_parameters '%s%s\n' "${_simple_argument_parameters}" "@(${parameter_or_description})"
       printf -v _simple_argument_descriptions '%s%s\n' "${_simple_argument_descriptions}" "${description}"
-      length=$(( ${#description} + 26 - ${#parameter_or_description} )) # 26 = 32 - 5 - 1
+      length=$(( ${#description} + 58 - ${#parameter_or_description} )) # 58 = 64 - 5 - 1
       printf -v ARGUMENTS "%s  [%s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "${description}"
       unset "${variable}"
       ;;
@@ -84,14 +91,14 @@ function argument() {
       printf -v _valued_argument_variables '%s%s\n' "${_valued_argument_variables}" "${variable}"
       printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "@(${parameter_or_description})"
       printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
-      length=$(( ${#description} + 25 - ${#parameter_or_description} - ${#variable} )) # 25 = 32 - 6 - 1
+      length=$(( ${#description} + 56 - ${#parameter_or_description} - ${#variable} )) # 59 = 64 - 4 - 1
       printf -v ARGUMENTS "%s  [%s %s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "\$${variable}" "${description}"
       unset "${variable}"
       ;;
     'positional')
       printf -v _positional_argument_variables '%s%s\n' "${_positional_argument_variables}" "${variable}"
       printf -v _positional_argument_descriptions '%s%s\n' "${_positional_argument_descriptions}" "${parameter_or_description}"
-      length=$(( ${#parameter_or_description} + 26 - ${#variable} )) # 26 = 32 - 5 - 1
+      length=$(( ${#parameter_or_description} + 58 - ${#variable} )) # 58 = 64 - 5 - 1
       printf -v ARGUMENTS "%s  [%s] %${length}s\\n" "${ARGUMENTS-}" "${variable}" "${parameter_or_description}"
       unset "${variable}"
       ;;
@@ -107,6 +114,7 @@ function parse-parameters() {
   local _yaml
 
   # Options
+  test -z "${_ADDITIONAL_OPTIONS+x}" && _ADDITIONAL_OPTIONS=
   test -z "${_ADDITIONAL_ARGUMENTS+x}" && _ADDITIONAL_ARGUMENTS=
   _yaml_files=()
   _i=1
@@ -132,14 +140,14 @@ function parse-parameters() {
       set -x
       set -- "${@:1:$((_i - 1))}" "${@:$((_i + 1))}"
       _i=$(( _i - 1))
-      if ! grep ' \-d' <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
-        _ADDITIONAL_ARGUMENTS+=' -d'
+      if ! grep ' \-d' <<<"${_ADDITIONAL_OPTIONS}" > /dev/null; then
+        _ADDITIONAL_OPTIONS+=' -d'
       fi
       ;;
     # [-h|--help]                  Prints usage (this text).
     '-h'|'--help')
-      if ! grep ' \-d' <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
-        _ADDITIONAL_ARGUMENTS+=' -d'
+      if ! grep ' \-h' <<<"${_ADDITIONAL_OPTIONS}" > /dev/null; then
+        _ADDITIONAL_OPTIONS+=' -h'
       fi
       print-usage
       exit 0
@@ -163,15 +171,23 @@ function parse-parameters() {
       case "${1}" in $(printf '%s' "${_simple_argument_parameters}" | head -n "${i}" | tail -n 1))
         _variable=$(printf '%s' "${_simple_argument_variables}" | head -n "${i}" | tail -n 1)
         export ${_variable}=true
+        if ! grep " ${1}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
+          _ADDITIONAL_ARGUMENTS+=" ${1}"
+        fi
         shift
         continue 2
       ;; esac
     done
     for i in $(seq 1 $(printf '%s' "${_valued_argument_variables}" | wc -l)); do
       case "${1}" in $(printf '%s' "${_valued_argument_parameters}" | head -n "${i}" | tail -n 1))
+        _criteria=${1}
         shift
         _variable=$(printf '%s' "${_valued_argument_variables}" | head -n "${i}" | tail -n 1)
         export ${_variable}="${1}"
+        _whole_argument_expression=" ${_criteria} \"${1}\""
+        if ! grep " ${_whole_argument_expression}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
+          _ADDITIONAL_ARGUMENTS+=" ${_whole_argument_expression}"
+        fi
         shift
         continue 2
       ;; esac
@@ -180,13 +196,16 @@ function parse-parameters() {
       _positional=$(printf '%s' "${_positional_argument_variables}" | head -n "${i}" | tail -n 1)
       if test -z "${!_positional+x}"; then
         export "${_positional}"="${1}"
+        if ! grep " ${1}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
+          _ADDITIONAL_ARGUMENTS+=" ${1}"
+        fi
         shift
         continue 2
       fi
     done
 
     # Allow extra parameters?
-    if ${_allow_extra_parameters-false}; then
+    if ${_ALLOW_EXTRA_PARAMETERS-false}; then
       break
     fi
 
@@ -200,7 +219,7 @@ function parse-parameters() {
 }
 
 function allow-extra-parameters() {
-  export _allow_extra_parameters=true
+  export _ALLOW_EXTRA_PARAMETERS=true
 }
 
 function add-to-usage() {
@@ -221,7 +240,9 @@ export WHITE
 
 # Export variables and functions.
 export _ADDITIONAL_ARGUMENTS
-export -f additional
+export _ADDITIONAL_OPTIONS
+export -f additional-arguments
+export -f additional-options
 export -f allow-extra-parameters
 export -f argument
 export -f parse-parameters

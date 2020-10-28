@@ -36,8 +36,10 @@ Make sure to import header first. It is a dependency to all other libraries.
 * ☑ default parameters `-d|--debug` calls `set -x` for debug mode
 * ☑ default parameters `-h|--help` calls `print-usage` automatically
 * ☑ `add-to-usage` to add a custom message to the usage text
-* ☑ `additional` function to print all given arguments other than the default
-    ones above
+* ☑ `additional-arguments` function to print arguments other than the default
+    ones above that were given to the script
+* ☑ `additional-options` function to print arguments from the list above that
+    were given to the script
 * ☑ ANSII colors `${BLACK}`, `${RED}`, `${GREEN}`, `${YELLOW}`, `${BLUE}`,
     `${PURPLE}`, `${CYAN}`, `${WHITE}` are exported
 * ☑ `${SCRIPT_PATH}`, `${LIB_PATH}` paths are exported

@@ -184,7 +184,7 @@ function parse-parameters() {
         shift
         _variable=$(printf '%s' "${_valued_argument_variables}" | head -n "${i}" | tail -n 1)
         export ${_variable}="${1}"
-        _whole_argument_expression=" ${_criteria} \"${1}\""
+        _whole_argument_expression=" ${_criteria} ${1}"
         if ! grep " ${_whole_argument_expression}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
           _ADDITIONAL_ARGUMENTS+=" ${_whole_argument_expression}"
         fi

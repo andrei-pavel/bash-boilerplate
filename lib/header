@@ -137,7 +137,7 @@ function parse-parameters() {
     # [-d|--debug]                 Enables debug mode, showing every executed
     #                              statement.
     '-d'|'--debug')
-      set -x
+      set -vx
       set -- "${@:1:$((_i - 1))}" "${@:$((_i + 1))}"
       _i=$(( _i - 1))
       if ! grep ' \-d' <<<"${_ADDITIONAL_OPTIONS}" > /dev/null; then

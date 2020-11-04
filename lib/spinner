@@ -102,13 +102,13 @@ export -f _spinner
 
 # Check if spinners are enabled.
 function are-spinners-enabled() {
-  test -z "${SPINNERS_ENABLED+x}" || test "${SPINNERS_ENABLED}" = true
+  test -z "${_SPINNERS_ENABLED+x}" || test "${_SPINNERS_ENABLED}" = true
 }
 export -f are-spinners-enabled
 
 # Check if verbose is enabled.
 function is-verbose-enabled() {
-  test -n "${SPINNERS_VERBOSE+x}" && test "${SPINNERS_VERBOSE}" = true
+  test -n "${_SPINNERS_VERBOSE+x}" && test "${_SPINNERS_VERBOSE}" = true
 }
 export -f is-verbose-enabled
 
@@ -122,13 +122,13 @@ function start-spinner() {
   _spinner 'start' &
   _BUFFER="$(mktemp)"
   export _BUFFER
-  if test -z "${SPINNERS_OUTPUT+x}" || test "${SPINNERS_OUTPUT}" = 'full-output'; then
+  if test -z "${_SPINNERS_OUTPUT+x}" || test "${_SPINNERS_OUTPUT}" = 'full-output'; then
     exec 3>&1 1>"${_BUFFER}" 2>&1
-  elif test "${SPINNERS_OUTPUT}" = 'stdout-only'; then
+  elif test "${_SPINNERS_OUTPUT}" = 'stdout-only'; then
     exec 3>&1 1>"${_BUFFER}" 2>/dev/null
-  elif test "${SPINNERS_OUTPUT}" = 'stderr-only'; then
+  elif test "${_SPINNERS_OUTPUT}" = 'stderr-only'; then
     exec 3>&1 1>/dev/null 2>"${_BUFFER}"
-  elif test "${SPINNERS_OUTPUT}" = 'no-output'; then
+  elif test "${_SPINNERS_OUTPUT}" = 'no-output'; then
     exec 3>&1 1>/dev/null 2>/dev/null
   fi
   export _SPINNER_PID="${!}"
@@ -155,7 +155,7 @@ export -f stop-spinner
 
 # Disable spinners.
 function disable-spinners() {
-  traps "${the_trap}" --return-code-only
+  traps "${_THE_TRAP}" --return-code-only
   export SPINNERS_ENABLED=false
 }
 export -f disable-spinners
@@ -169,10 +169,10 @@ export -f disable-verbose
 # Configure spinner output to stdout, stderr, both or none.
 function configure-spinner-output() {
   export SPINNERS_OUTPUT=${1-}
-  if test "${SPINNERS_OUTPUT}" != 'full-output' &&
-     test "${SPINNERS_OUTPUT}" != 'stdout-only' &&
-     test "${SPINNERS_OUTPUT}" != 'stderr-only' &&
-     test "${SPINNERS_OUTPUT}" != 'no-output'; then
+  if test "${_SPINNERS_OUTPUT}" != 'full-output' &&
+     test "${_SPINNERS_OUTPUT}" != 'stdout-only' &&
+     test "${_SPINNERS_OUTPUT}" != 'stderr-only' &&
+     test "${_SPINNERS_OUTPUT}" != 'no-output'; then
     printf 'wrong spinner output %s\n' "${mode}" 2>/dev/null
     return 1
   fi
@@ -181,7 +181,7 @@ export -f configure-spinner-output
 
 # Enable spinners.
 function enable-spinners() {
-  traps "${the_trap}"
+  traps "${_THE_TRAP}"
   export SPINNERS_ENABLED=true
 }
 export -f enable-spinners

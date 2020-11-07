@@ -25,12 +25,10 @@ ${ARGUMENTS}"
   printf \
 'Usage: %s {{options}} %s
 Options:
-  [-c|--config $config_yaml]                                   Reads from a YAML configuration and converts all
-                                                               key-value pairs with literal values to
-                                                               environment variables.
-  [-d|--debug]                                                 Enables debug mode, showing every executed
-                                                               statement.
-  [-h|--help]                                                  Prints usage (this text).%s%s' \
+  [-c|--config $config_yaml]                                   Read from a YAML configuration and convert all
+                                                               key-value pairs to environment variables.
+  [-d|--debug]                                                 Enable debug mode, showing every executed command.
+  [-h|--help]                                                  Print usage (this text).%s%s' \
     "$(basename "${0}")" "${arguments}" "${ARGUMENTS}" "${_add_to_usage-}"
 }
 
@@ -42,15 +40,27 @@ else
 fi
 
 # Colors
-RESET='\e[1m\e[0m'
-BLACK='\e[1m\e[30m'
-RED='\e[1m\e[31m'
-GREEN='\e[1m\e[32m'
-YELLOW='\e[1m\e[33m'
-BLUE='\e[1m\e[34m'
-PURPLE='\e[1m\e[35m'
-CYAN='\e[1m\e[36m'
-WHITE='\e[1m\e[37m'
+if test -t 1; then
+  RESET='\033[0m'
+  BLACK='\033[30m'
+  RED='\033[31m'
+  GREEN='\033[32m'
+  YELLOW='\033[33m'
+  BLUE='\033[34m'
+  PURPLE='\033[35m'
+  CYAN='\033[36m'
+  WHITE='\033[37m'
+else
+  RESET=
+  BLACK=
+  RED=
+  GREEN=
+  YELLOW=
+  BLUE=
+  PURPLE=
+  CYAN=
+  WHITE=
+fi
 
 # Parse arguments.
 # Source guard

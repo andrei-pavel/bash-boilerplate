@@ -28,7 +28,7 @@ function _spinner_cycle () {
   fi
 }
 export -f _spinner_cycle
-export _SPINNER_PERIOD='0.15s'
+export _SPINNER_PERIOD='1' # seconds
 
 # Offer support for environments that don't have access to tput. tput is used to
 # hide and show the cursor.

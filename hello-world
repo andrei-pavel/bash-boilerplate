@@ -64,11 +64,11 @@ fi
 start-spinner 'Nested spinners disable the inner ones...'
 start-spinner 'This one...'
 start-spinner 'And this one...'
-sleep 1s
+sleep 1
 stop-spinner 0
 stop-spinner 0
 start-spinner 'And this one...'
-sleep 1s
+sleep 1
 stop-spinner 0
 stop-spinner 0
 

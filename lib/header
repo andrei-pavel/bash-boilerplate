@@ -62,6 +62,16 @@ else
   WHITE=
 fi
 
+# Reset variables responsible for argument defining & parameter parsing.
+export _simple_argument_variables=''
+export _simple_argument_parameters=''
+export _simple_argument_descriptions=''
+export _valued_argument_variables=''
+export _valued_argument_parameters=''
+export _valued_argument_descriptions=''
+export _positional_argument_variables=''
+export _positional_argument_descriptions=''
+
 # Parse arguments.
 # Source guard
 test -n "${_LIB_HEADER_SOURCED+x}" && return 0
@@ -101,7 +111,7 @@ function argument() {
       printf -v _valued_argument_variables '%s%s\n' "${_valued_argument_variables}" "${variable}"
       printf -v _valued_argument_parameters '%s%s\n' "${_valued_argument_parameters}" "@(${parameter_or_description})"
       printf -v _valued_argument_descriptions '%s%s\n' "${_valued_argument_descriptions}" "${description}"
-      length=$(( ${#description} + 56 - ${#parameter_or_description} - ${#variable} )) # 59 = 64 - 4 - 1
+      length=$(( ${#description} + 56 - ${#parameter_or_description} - ${#variable} )) # 56 = 64 - 5 - 2 - 1
       printf -v ARGUMENTS "%s  [%s %s] %${length}s\\n" "${ARGUMENTS-}" "${parameter_or_description}" "\$${variable}" "${description}"
       unset "${variable}"
       ;;
@@ -257,16 +267,6 @@ export -f allow-extra-parameters
 export -f argument
 export -f parse-parameters
 export -f print-usage
-
-# Export variables responsible for argument defining & parameter parsing.
-test -z "${_simple_argument_variables+x}" && export _simple_argument_variables=''
-test -z "${_simple_argument_parameters+x}" && export _simple_argument_parameters=''
-test -z "${_simple_argument_descriptions+x}" && export _simple_argument_descriptions=''
-test -z "${_valued_argument_variables+x}" && export _valued_argument_variables=''
-test -z "${_valued_argument_parameters+x}" && export _valued_argument_parameters=''
-test -z "${_valued_argument_descriptions+x}" && export _valued_argument_descriptions=''
-test -z "${_positional_argument_variables+x}" && export _positional_argument_variables=''
-test -z "${_positional_argument_descriptions+x}" && export _positional_argument_descriptions=''
 
 # Export paths.
 export LIB_PATH

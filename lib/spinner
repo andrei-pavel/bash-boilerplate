@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2020 Andrei Pavel, andrei.pavel@mail.com
+# Copyright (C) 2017-2021 Andrei Pavel, andrei.pavel@mail.com
 # Licensed under the MIT License
 #
 # Warning! Nested spinners are not supported.
@@ -114,9 +114,21 @@ export -f is-verbose-enabled
 
 # Start spinner.
 function start-spinner() {
-  if test "${-}" = *x* || test -n "${_SPINNER_PID+x}" || test ! are-spinners-enabled; then
+  # Give up if debug is enabled.
+  if printf '%s' "${-}" | grep 'x' &> /dev/null; then
     return
   fi
+
+  # Give up if another spinner is already active.
+  if test -n "${_SPINNER_PID+x}"; then
+    return
+  fi
+
+  # Give up if spinners are disabled altogether.
+  if test ! are-spinners-enabled; then
+    return
+  fi
+
   export _MESSAGE="${1-}"
   _display_message 'first'
   _spinner 'start' &
@@ -139,9 +151,22 @@ export -f start-spinner
 # Stop spinner.
 function stop-spinner() {
   _tput cvvis
-  if test "${-}" = *x* || test -z "${_SPINNER_PID+x}" || test ! are-spinners-enabled; then
+
+  # Give up if debug is enabled.
+  if printf '%s' "${-}" | grep 'x' &> /dev/null; then
     return
   fi
+
+  # Give up if another spinner is already active.
+  if test -n "${_SPINNER_PID+x}"; then
+    return
+  fi
+
+  # Give up if spinners are disabled altogether.
+  if test ! are-spinners-enabled; then
+    return
+  fi
+
   exec 1>&3
   local exit_code="${1-0}"
   _spinner 'stop' "${exit_code}"

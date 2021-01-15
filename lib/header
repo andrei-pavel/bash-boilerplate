@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2020 Andrei Pavel, andrei.pavel@mail.com
+# Copyright (C) 2017-2021 Andrei Pavel, andrei.pavel@mail.com
 # Licensed under the MIT License
 
 # Fail script if any command fails.
@@ -86,9 +86,9 @@ function additional-options() {
 
 # Print any given arguments other than default options. Use this when running
 # another script inside your script to which you want to pass the same arguments
-# that were given to the parent script: ./script $(additional-options)
-function additional-arguments() {
-  printf '%s' "${_ADDITIONAL_ARGUMENTS-}"
+# that were given to the parent script: ./script $(additional-parameters)
+function additional-parameters() {
+  printf '%s' "${_ADDITIONAL_PARAMETERS-}"
 }
 
 # Define an argument.
@@ -139,7 +139,7 @@ function parse-parameters() {
 
   # Options
   test -z "${_ADDITIONAL_OPTIONS+x}" && _ADDITIONAL_OPTIONS=
-  test -z "${_ADDITIONAL_ARGUMENTS+x}" && _ADDITIONAL_ARGUMENTS=
+  test -z "${_ADDITIONAL_PARAMETERS+x}" && _ADDITIONAL_PARAMETERS=
   _yaml_files=()
   _i=1
   while (( _i <= ${#} )); do
@@ -195,8 +195,8 @@ function parse-parameters() {
       case "${1}" in $(printf '%s' "${_simple_argument_parameters}" | head -n "${i}" | tail -n 1))
         _variable=$(printf '%s' "${_simple_argument_variables}" | head -n "${i}" | tail -n 1)
         export ${_variable}=true
-        if ! grep " ${1}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
-          _ADDITIONAL_ARGUMENTS+=" ${1}"
+        if ! grep " ${1}" <<<"${_ADDITIONAL_PARAMETERS}" > /dev/null; then
+          _ADDITIONAL_PARAMETERS+=" ${1}"
         fi
         shift
         continue 2
@@ -209,8 +209,8 @@ function parse-parameters() {
         _variable=$(printf '%s' "${_valued_argument_variables}" | head -n "${i}" | tail -n 1)
         export ${_variable}="${1}"
         _whole_argument_expression=" ${_criteria} ${1}"
-        if ! grep " ${_whole_argument_expression}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
-          _ADDITIONAL_ARGUMENTS+=" ${_whole_argument_expression}"
+        if ! grep " ${_whole_argument_expression}" <<<"${_ADDITIONAL_PARAMETERS}" > /dev/null; then
+          _ADDITIONAL_PARAMETERS+=" ${_whole_argument_expression}"
         fi
         shift
         continue 2
@@ -220,8 +220,8 @@ function parse-parameters() {
       _positional=$(printf '%s' "${_positional_argument_variables}" | head -n "${i}" | tail -n 1)
       if test -z "${!_positional+x}"; then
         export "${_positional}"="${1}"
-        if ! grep " ${1}" <<<"${_ADDITIONAL_ARGUMENTS}" > /dev/null; then
-          _ADDITIONAL_ARGUMENTS+=" ${1}"
+        if ! grep " ${1}" <<<"${_ADDITIONAL_PARAMETERS}" > /dev/null; then
+          _ADDITIONAL_PARAMETERS+=" ${1}"
         fi
         shift
         continue 2
@@ -234,7 +234,7 @@ function parse-parameters() {
     fi
 
     # Unrecognized parameter
-    printf "${RED}ERROR: Unrecognized parameter '%s'${RESET}\\n" "${1}" 1>&2
+    printf "${RED}ERROR: Unrecognized parameter '%s'${RESET}\\n" "${1}" >&2
     print-usage
     exit 1
   done
@@ -263,10 +263,10 @@ export CYAN
 export WHITE
 
 # Export variables and functions.
-export _ADDITIONAL_ARGUMENTS
 export _ADDITIONAL_OPTIONS
-export -f additional-arguments
+export _ADDITIONAL_PARAMETERS
 export -f additional-options
+export -f additional-parameters
 export -f allow-extra-parameters
 export -f argument
 export -f parse-parameters

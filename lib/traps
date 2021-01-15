@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2018-2020 Andrei Pavel, andrei.pavel@mail.com
+# Copyright (C) 2018-2021 Andrei Pavel, andrei.pavel@mail.com
 # Licensed under the MIT License
 
 # Source guard
@@ -22,7 +22,7 @@ function traps() {
         return_code=\${?}
         trap - EXIT
         ${_THE_TRAP}
-        printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+        printf \"${t} %s\\n\" \"\${return_code}\" >&2
         exit \${return_code}
       " "${t}"
     else
@@ -31,7 +31,7 @@ function traps() {
         trap - EXIT
         declare -f stop-spinner &> /dev/null && stop-spinner \${return_code}
         ${_THE_TRAP}
-        printf \"${t} %s\\n\" \"\${return_code}\" 1>&2
+        printf \"${t} %s\\n\" \"\${return_code}\" >&2
         exit \${return_code}
       " "${t}"
     fi

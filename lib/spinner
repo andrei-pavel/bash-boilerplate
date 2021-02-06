@@ -157,8 +157,8 @@ function stop-spinner() {
     return
   fi
 
-  # Give up if another spinner is already active.
-  if test -n "${_SPINNER_PID+x}"; then
+  # Give up if no spinner is active.
+  if test -z "${_SPINNER_PID+x}"; then
     return
   fi
 

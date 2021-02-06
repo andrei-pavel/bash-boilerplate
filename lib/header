@@ -138,8 +138,8 @@ function parse-parameters() {
   local _yaml
 
   # Options
-  test -z "${_ADDITIONAL_OPTIONS+x}" && _ADDITIONAL_OPTIONS=
-  test -z "${_ADDITIONAL_PARAMETERS+x}" && _ADDITIONAL_PARAMETERS=
+  _ADDITIONAL_OPTIONS=
+  _ADDITIONAL_PARAMETERS=
   _yaml_files=()
   _i=1
   while (( _i <= ${#} )); do

@@ -3,39 +3,58 @@
 # Copyright (C) 2017-2021 Andrei Pavel, andrei.pavel@mail.com
 # Licensed under the MIT License
 
-# Header
-script_path="$(dirname "$(readlink -f "${0}")")"
-if test -z "${BASH_SOURCE+x}"; then
-  lib_path="${script_path}"
+# Get script path.
+if test -n "${BASH_SOURCE+x}"; then
+  lib_script_path=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 else
-  lib_path="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+  lib_script_path=$(dirname "$(readlink -f "${0}")")
 fi
-. "${lib_path}/header"
-. "${lib_path}/utils"
-. "${lib_path}/spinner"
 
-argument 'positional' 'config_yaml' 'YAML to use'
-
-parse-parameters "${@}"
+# Source scripts.
+. "${lib_script_path}/utils"
+. "${lib_script_path}/spinners"
 
 # Default parameters
-test -z "${config_yaml+x}" && config_yaml=./config.yaml
+config_yaml_candidate="${@: -1}"
+if (( 1 < ${#} )) && test -n "${config_yaml_candidate}"; then
+  config_yaml="${config_yaml_candidate}"
+elif test -n "${_DEFAULT_YAML_TO_ENV+x}"; then
+  if test -n "${_YAML_TO_ENV_SOURCED+x}"; then
+    return 0
+  fi
+  config_yaml="${lib_script_path}/../../config.yaml"
+fi
+
+# Sanity check
+if test ! -f "${config_yaml}"; then
+  printf "${RED}ERROR: file %s does not exist or is not a file.${RESET}\\n" "${config_yaml}" >&2
+  exit 1
+fi
 
 #------------------------------------------------------------------------------#
 
-mandatory-command sed
+mandatory-commands sed yq
 
-# start-spinner 'Converting YAML to environment variables...'
+# Remove comments from config.yaml.
+yaml_content=$(grep -Ev '^\s*//|^\s*#|^\s*/\*.*\*/' "${config_yaml}" | sed '/\/\*/,/\*\//d;s#[^ ]+//.*$##g;s/#.*$//g')
+
+# Sanity check
+if ! yq . <<< "${yaml_content}" &> /dev/null; then
+  printf "${RED}ERROR: file %s is not a valid YAML or yq doesn't work.${RESET}\\n" "${config_yaml}" >&2
+  exit 1
+fi
+
 if yq 'walk(.)' <<< '{}' &> /dev/null; then
-  env=$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then .value == null // "\(.key)=(\((.value | @sh?)))" else . end) | .[]' < "${config_yaml}")
+  env=$(yq -r 'to_entries | walk(if type == "object" and has("key") and has("value") then .value == null // "\(.key)=(\((.value | @sh?)))" else . end) | .[]' <<< "${yaml_content}")
 elif yq -r '.' <<< '{}' &> /dev/null; then
   # Support for older versions of yq that don't have the walk() function
   # This makes it lack support for multiple levels of hierarchy in the YAML.
-  env=$(yq -r 'to_entries | map(select(.value != null) | "\(.key)=(\(.value | @sh?))") | .[]' < "${config_yaml}")
+  env=$(yq -r 'to_entries | map(select(.value != null) | "\(.key)=(\(.value | @sh?))") | .[]' <<< "${yaml_content}")
 else
   # Support for systems without yq or with non-jq compliant versions of yq
-  env=$(sed "/^\s/d; s/\s*:\s*\(.*\)$/='\1'/" "${config_yaml}")
+  env=$(sed "/^\s/d; s/\s*:\s*\(.*\)$/='\1'/" <<< "${yaml_content}")
 fi
-env="$(sed 's/^/export /g' <<< "${env}")"
+env=$(sed 's/^/export /g' <<< "${env}")
 eval ${env}
-stop-spinner ${?}
+
+export _YAML_TO_ENV_SOURCED=true

@@ -34,14 +34,24 @@ function mandatory() {
 }
 export -f mandatory
 
+function try-install() {
+  case "${1}" in
+    'jq') pip install jq; return 0 ;;
+    'yq') pip install yq; return 0 ;;
+  esac
+  return 1
+}
+
 # Test if command given as parameter exists.
-function mandatory-command() {
+function mandatory-commands() {
   while (( ${#} > 0 )); do
-    if ! command -v "${1}" &> /dev/null; then
-      printf "${RED}%s${RESET} is mandatory.\\n" "${1}" >&2
-      exit 3
+    if ! command -v "${1}" &> /dev/null || ! "${1}" --help &> /dev/null; then
+      if ! try-install "${1}"; then
+        printf "${RED}%s${RESET} is mandatory.\\n" "${1}" >&2
+        exit 3
+      fi
     fi
     shift
   done
 }
-export -f mandatory-command
+export -f mandatory-commands

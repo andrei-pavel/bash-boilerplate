@@ -166,14 +166,14 @@ function parse-parameters() {
       _i=$(( _i - 1 ))
       if ! grep ' \-d' <<<"${_ADDITIONAL_OPTIONS}" > /dev/null; then
         _ADDITIONAL_OPTIONS+=' -d'
-        _ADDITIONAL_OPTIONS=$(printf '%s' "${_ADDITIONAL_OPTIONS}" | xargs)
+        _ADDITIONAL_OPTIONS=$(printf '%s' "${_ADDITIONAL_OPTIONS}" | sed 's/^ *//g' | sed 's/ *$//g')
       fi
       ;;
     # [-h|--help]                  Prints usage (this text).
     '-h'|'--help')
       if ! grep ' \-h' <<<"${_ADDITIONAL_OPTIONS}" > /dev/null; then
         _ADDITIONAL_OPTIONS+=' -h'
-        _ADDITIONAL_OPTIONS=$(printf '%s' "${_ADDITIONAL_OPTIONS}" | xargs)
+        _ADDITIONAL_OPTIONS=$(printf '%s' "${_ADDITIONAL_OPTIONS}" | sed 's/^ *//g' | sed 's/ *$//g')
       fi
       print-usage
       exit 0
@@ -209,7 +209,7 @@ function parse-parameters() {
         export ${_variable}=true
         if ! grep " ${1}" <<<"${_ADDITIONAL_PARAMETERS}" > /dev/null; then
           _ADDITIONAL_PARAMETERS+=" ${1}"
-          _ADDITIONAL_PARAMETERS=$(printf '%s' "${_ADDITIONAL_PARAMETERS}" | xargs)
+          _ADDITIONAL_PARAMETERS=$(printf '%s' "${_ADDITIONAL_PARAMETERS}" | sed 's/^ *//g' | sed 's/ *$//g')
         fi
         shift
         continue 2
@@ -224,7 +224,7 @@ function parse-parameters() {
         _whole_argument_expression=" ${_criteria} ${1}"
         if ! grep " ${_whole_argument_expression}" <<<"${_ADDITIONAL_PARAMETERS}" > /dev/null; then
           _ADDITIONAL_PARAMETERS+=" ${_whole_argument_expression}"
-          _ADDITIONAL_PARAMETERS=$(printf '%s' "${_ADDITIONAL_PARAMETERS}" | xargs)
+          _ADDITIONAL_PARAMETERS=$(printf '%s' "${_ADDITIONAL_PARAMETERS}" | sed 's/^ *//g' | sed 's/ *$//g')
         fi
         shift
         continue 2

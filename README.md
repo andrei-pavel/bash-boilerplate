@@ -19,8 +19,8 @@ All libraries are found inside `lib`.
 
 Import any library with:
 ```bash
-SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-. "${SCRIPT_PATH}/lib/${library}"
+script_path="$(dirname "$(readlink -f "${0}")")"
+. "${script_path}/lib/${library}"
 ```
 
 They all have import guards to make sure no library is imported twice.
@@ -42,7 +42,6 @@ Make sure to import header first. It is a dependency to all other libraries.
     were given to the script
 * ☑ ANSII colors `${BLACK}`, `${RED}`, `${GREEN}`, `${YELLOW}`, `${BLUE}`,
     `${PURPLE}`, `${CYAN}`, `${WHITE}` are exported
-* ☑ `${SCRIPT_PATH}`, `${LIB_PATH}` paths are exported
 * ☑ `argument` to define your argument and how it should be parsed
 * ☑ `allow-extra-parameters` to allow more parameters than defined to be used
     directly in the script
@@ -91,13 +90,12 @@ The best bash spinner out there
 
 * ☑ Simply importing it with
 ```bash
-. "${SCRIPT_PATH}/lib/yaml-to-env [${config_yaml}]"
+. "${script_path}/lib/yaml-to-env [${config_yaml}]"
 ```
 will read `${config_yaml}` or `./config.yaml` if it is not provided and will
 convert all YAML variables to shell variables just like
 `-c|--config $config_yaml`, but programatically instead of user-requested.
-* ☐ support for a second `-c config-yaml` in a child script
-    * workaround: call `. "${LIB_PATH}/yaml-to-env" config.yaml` before calling the child script
+* ☑ support for a second `-c config-yaml` in a child script
 
 
 ## Example

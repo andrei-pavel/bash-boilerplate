@@ -4,11 +4,11 @@
 # Licensed under the MIT License
 
 # Get script path and append it to PATH so other scripts are callable.
-SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
+script_path="$(dirname "$(readlink -f "${0}")")"
 
 # Header
-. "${SCRIPT_PATH}/lib/header"
-. "${SCRIPT_PATH}/lib/spinners"
+. "${script_path}/lib/header"
+. "${script_path}/lib/spinner"
 
 parse-parameters "${@}"
 
@@ -16,6 +16,6 @@ parse-parameters "${@}"
 
 start-spinner "Installing..."
 
-find "${SCRIPT_PATH}/lib" -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | xargs -I{} bash -c "install -Dm644 '${SCRIPT_PATH}/lib/{}' '/usr/local/bin/lib/{}'"
+find "${script_path}/lib" -mindepth 1 -maxdepth 1 -type f -exec basename {} \; | xargs -I{} bash -c "install -Dm644 '${script_path}/lib/{}' '/usr/local/bin/lib/{}'"
 
 stop-spinner ${?}

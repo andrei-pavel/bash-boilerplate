@@ -4,11 +4,11 @@
 # Licensed under the MIT License
 
 # Header
-SCRIPT_PATH="$(dirname "$(readlink -f "${0}")")"
-. "${SCRIPT_PATH}/lib/header"
-. "${SCRIPT_PATH}/lib/utils"
-. "${SCRIPT_PATH}/lib/spinners"
-. "${SCRIPT_PATH}/lib/traps"
+script_path="$(dirname "$(readlink -f "${0}")")"
+. "${script_path}/lib/header"
+. "${script_path}/lib/utils"
+. "${script_path}/lib/spinner"
+. "${script_path}/lib/traps"
 
 argument 'simple' 'approval_required' '-a|--approval' 'whether to ask user for approval'
 argument 'valued' 'count' '-n' 'print $count times'

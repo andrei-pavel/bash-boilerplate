@@ -12,7 +12,7 @@ fi
 
 # Source scripts.
 . "${lib_script_path}/utils"
-. "${lib_script_path}/spinners"
+. "${lib_script_path}/spinner"
 
 # Default parameters
 config_yaml_candidate="${@: -1}"

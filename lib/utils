@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2021 Andrei Pavel, andrei.pavel@mail.com
+# Copyright (C) 2017-2022 Andrei Pavel, andrei.pavel@mail.com
 # Licensed under the MIT License
 
 # Source guard
@@ -45,7 +45,7 @@ function try-install() {
 # Test if command given as parameter exists.
 function mandatory-commands() {
   while (( ${#} > 0 )); do
-    if ! command -v "${1}" &> /dev/null || ! "${1}" --help &> /dev/null; then
+    if ! command -V "${1}" &> /dev/null || ! "${1}" --help &> /dev/null; then
       if ! try-install "${1}"; then
         printf "${RED}%s${RESET} is mandatory.\\n" "${1}" >&2
         exit 3

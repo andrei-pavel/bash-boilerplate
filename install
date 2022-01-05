@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2020 Andrei Pavel, andrei.pavel@mail.com
+# Copyright (C) 2017-2022 Andrei Pavel, andrei.pavel@mail.com
 # Licensed under the MIT License
 
 # Get script path and append it to PATH so other scripts are callable.

@@ -200,7 +200,7 @@ function parse-parameters() {
       ;;
     # [-h|--help]                  Prints usage (this text).
     '-h'|'--help')
-      ensure-additonal-option '-h'
+      ensure-additional-option '-h'
       print-usage
       exit 0
       ;;
